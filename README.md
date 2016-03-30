@@ -1,2 +1,2 @@
 # Phantom-Cyber
-Repo for Phantom Cyber Apps
+Phantom Playbook and App repository
