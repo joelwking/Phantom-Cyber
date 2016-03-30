@@ -6,6 +6,7 @@
      Revision history:
      28 March 2016  |  1.0 - initial release
      29 March 2016  |  1.1 - comments and style modifications
+     30 March 2016  |  1.2 - documentation update
 
      module: F5_connector.py
      author: Joel W. King, World Wide Technology
@@ -16,7 +17,6 @@
              ssh phantom@10.255.78.71
              export PYTHONPATH=/opt/phantom/lib/:/opt/phantom/www/
              export REQUESTS_CA_BUNDLE=/opt/phantom/etc/cacerts.pem
-             cd ./app_dev/ens_vt
              cd ./app_dev/f5_firewall
              touch __init__.py
              ../compile_app.py -i
