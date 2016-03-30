@@ -1,0 +1,19 @@
+{
+    "app_config": null,
+    "asset_id": "22",
+    "config": {
+               "device": "10.255.111.100",
+               "username": "admin",
+               "password": "redacted"
+    },
+    "debug_level": 3,
+    "identifier": "test connectivity",
+    "parameters": [
+        {
+            "src_ip": "8.8.8.8",
+            "partition": "Common"
+        }
+    ]
+}
+
+

@@ -1,0 +1,20 @@
+{
+    "app_config": null,
+    "asset_id": "22",
+    "config": {
+               "device": "10.255.111.100",
+               "username": "admin",
+               "password": "redacted"
+    },
+    "debug_level": 3,
+    "identifier": "block ip",
+    "parameters": [
+        {
+            "partition": "Common",
+            "policy": "Phantom_Inbound",
+            "source": "8.8.8.8",
+            "action": "reject",
+            "rule name": "DYNAMIC_BLOCK_byPhantom"
+        }
+    ]
+}
