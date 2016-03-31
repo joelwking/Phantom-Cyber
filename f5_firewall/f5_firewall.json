@@ -14,9 +14,10 @@
     "product_version_regex": ".*",
     "min_phantom_version": "1.0.240",
     "logo": "F5.png",
+    "url": "https://github.com/joelwking/Phantom-Cyber",
     "configuration": {"device": {"description": "F5 Device IP/Hostname", "data_type": "string", "required": true},
                       "username": {"description": "username", "data_type": "string", "required": true},
-                      "password": {"description": "password", "data_type": "string", "required": true}},
+                      "password": {"description": "password", "data_type": "password", "required": true}},
     "actions": [
       {
         "action": "block ip",

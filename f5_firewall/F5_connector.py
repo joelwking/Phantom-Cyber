@@ -7,6 +7,8 @@
      28 March 2016  |  1.0 - initial release
      29 March 2016  |  1.1 - comments and style modifications
      30 March 2016  |  1.2 - documentation update
+     31 March 2016  |  1.3 - password 'data type' should be password, not string
+                             reformatted debug output
 
      module: F5_connector.py
      author: Joel W. King, World Wide Technology
@@ -142,7 +144,7 @@ class F5_Connector(BaseConnector):
 
         """
         config = self.get_config()
-        self.debug_print("%s BLOCK_IP parameters:\n%s config:\n%s" % (self.BANNER, param, config))
+        self.debug_print("%s BLOCK_IP parameters:\n%s \nconfig:%s" % (self.BANNER, param, config))
 
         action_result = ActionResult(dict(param))          # Add an action result to the App Run
         self.add_action_result(action_result)
@@ -151,21 +153,21 @@ class F5_Connector(BaseConnector):
         body = '{"name":"%s","action":"%s","place-after":"first","source":{"addresses":[{"name":"%s/32"}]}}' \
                % (param["rule name"], param["action"], param["source"])
 
-        self.debug_print("%s BLOCK_IP URL:\n%s body:\n%s" % (self.BANNER, URL, body))
+        self.debug_print("%s BLOCK_IP URL: %s \nbody:%s" % (self.BANNER, URL, body))
 
         password = self._normalize_password(config.get("password"))
         F5 = iControl.Connection(host=config.get("device"), username=config.get("username"), password=password)
 
         uri, body = F5.standarize_body_url(URL, body)
         code, changed, response = iControl.install_config(F5, uri, body)
-        self.debug_print("%s BLOCK_IP code:\n%s changed:\n%s response:\n%s" % (self.BANNER, code, changed, response))
+        self.debug_print("%s BLOCK_IP code: %s \nchanged: %s \nresponse: %s" % (self.BANNER, code, changed, response))
 
         if code == 0:
            action_result.set_status(phantom.APP_SUCCESS)
         else:
             action_result.set_status(phantom.APP_ERROR)
 
-        action_result.add_data(response)
+        action_result.add_data(response)                   # response data should be more precicely formatted
         return
 
     def _normalize_password(self, password):
@@ -173,6 +175,9 @@ class F5_Connector(BaseConnector):
         To prevent our passwords from showing on the screen in demos, we import the password of the asset
         from the optional constants file, and then if the password is 'redacted' we substitute the correct password
         If there is no global variable called REDACTED, then we assume the suplied password is what they want to use
+
+        Note: you should code your json configuration file for the password to have a data-type of password rather
+        than string. Then the password will not be shown on the UI.
         """
 
         if password.upper() == "REDACTED":
