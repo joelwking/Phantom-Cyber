@@ -3,7 +3,7 @@
 
 Usage:
 
-python meta_data_collection.py <phone_ip_address> <token> 
+python meta_data_collection.py <phone_ip_address> <token> <phantom server>
 
    Copyright (c) 2016 World Wide Technology, Inc.
    All rights reserved.
@@ -12,6 +12,7 @@ python meta_data_collection.py <phone_ip_address> <token>
 
    Revision history:
      26 March 2016  |  1.0 - initial release
+     1 April  2016  |  1.1 - we now have multiple instances of Phantom, include server IP on command line
 
 """
 
@@ -208,10 +209,10 @@ def get_meta_data_keys():
 if __name__ == '__main__':
 
     debug = False
-    PHANTOM_SERVER = "10.255.78.71"
     ARTIFACT_LABEL = "event"                            #  This is user configurable, will show up in menu
 
     try:
+        PHANTOM_SERVER = sys.argv[3]                    #  IP address of the phantom server
         main(sys.argv[1])
     except IndexError:
         usage()
