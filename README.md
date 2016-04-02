@@ -1,5 +1,6 @@
 # Phantom-Cyber
 Phantom Playbook and App repository
+http://blog.phantom.us/2016/03/31/community-magic/
 
 # Blog
 In an effort to demonstrate building and automating the next generation networks, I’ve submitted on behalf of World Wide Technology, an entry in the 2016 Phantom playbook and app contest. 
