@@ -1,0 +1,113 @@
+ {
+    "appid"       : "916f12d2-7f9b-4bfa-acff-027514e2b489",
+    "name"      : "Cisco Meraki Dashboard",
+    "description" : "This app interfaces with the Cisco Meraki cloud managed devices.",
+    "publisher": "World Wide Technology",
+    "package_name": "phantom_meraki",
+    "type": "information service",
+    "license": "Copyright (c) World Wide Technology, Inc. 2016",
+    "main_module" : "meraki_connector.pyc",
+    "app_version": "1.4",
+    "utctime_updated": "2016-05-5T22:02:18.000000Z",
+    "product_vendor": "Cisco Meraki",
+    "product_name": "Cisco Meraki",
+    "product_version_regex": ".*",
+    "min_phantom_version": "1.0.240",
+    "logo": "cisco-meraki.png",
+    "url": "https://github.com/joelwking/Phantom-Cyber/meraki",
+    "configuration": {"Meraki-API-Key": {"description": "Meraki API key for your account", "data_type": "string", "required": true},
+                     "dashboard": {"description": "Dashboard URL, default is dashboard.meraki.com", "data_type": "string", "required": false}},
+    "actions": [
+      {
+        "action": "locate device",
+        "description": "Locates a specific device in your cloud managed Meraki network",
+        "type": "investigate",
+        "identifier": "locate device",
+        "read_only": true,
+        "parameters": {
+          "timespan": {
+            "description": "The timespan (seconds) for which clients will be fetched. At most one month, 2592000 results less predictable under 300 seconds.",
+            "data_type": "numeric"
+          },
+          "search_string": {
+            "description": "Characters to match in the client MAC address or description. Use asterisk * to return all clients.",
+            "data_type": "string"
+          }
+        },
+         "render": {
+             "width": 12,
+             "title": "Clients in Meraki Cloud",
+             "type": "table",
+             "height": 5
+          },
+        "output": [
+        {
+          "data_path": "action_result.data.*.client.mac",
+          "data_type": "string",
+          "column_name": "Client MAC",
+          "column_order": 0
+        },
+        {
+          "data_path": "action_result.data.*.client.description",
+          "data_type": "string",
+          "column_name": "Client Desc.",
+          "column_order": 1
+        },
+        {
+          "data_path": "action_result.data.*.device",
+          "data_type": "string",
+          "column_name": "Device",
+          "column_order": 2
+        },
+        {
+          "data_path": "action_result.data.*.network",
+          "data_type": "string",
+          "column_name": "Network",
+          "column_order": 3
+        },
+        {
+          "data_path": "action_result.data.*.organization",
+          "data_type": "string",
+          "column_name": "Organization",
+          "column_order": 4
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.parameter.timespan",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.parameter.search_string",
+          "data_type": "string"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric"
+        }
+      ],
+        "versions": "EQ(*)"},
+        {
+         "action": "test connectivity",
+         "description": "Validate the asset configuration for connectivity",
+         "verbose": "This action logs into the Cisco Meraki Cloud Service using a REST API call to validate the API key",
+         "type": "test",
+         "identifier": "test connectivity",
+         "read_only": true,
+         "parameters": {
+         },
+        "output": [],
+        "versions":"EQ(*)"
+        }
+    ]
+}
