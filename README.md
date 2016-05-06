@@ -1,6 +1,5 @@
 # Phantom-Cyber
-Phantom Playbook and App repository
-http://blog.phantom.us/2016/03/31/community-magic/
+Phantom Playbook and App Contest
 
 # Blog
 In an effort to demonstrate building and automating the next generation networks, I’ve submitted on behalf of World Wide Technology, these entries in the 2016 Phantom playbook and app contest. 
@@ -12,6 +11,7 @@ This contest is sponsored by Phantom (www.phantom.us) to promote the community d
 ## F5 App
 At World Wide Technology, we are engaging with customers in their evaluation of Phantom and this video clip provides a demonstration of the playbooks and apps developed to ingest data through the REST API and then implement a firewall rule on a F5 BIG-IP appliance to block the source IP address identified in the artifact.
 https://youtu.be/1lktjQzVcQQ 
+http://blog.phantom.us/2016/03/31/community-magic/
 
 ## Meraki App
 *Integrating Cloud Controlled WiFi, Routing and Security with Security Automation and Orchestration*
