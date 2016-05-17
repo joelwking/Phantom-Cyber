@@ -25,4 +25,6 @@ Cisco Meraki is a cloud managed architecture, which is used to deploy, configure
 
 https://youtu.be/RaUU7evOJi0
 
+https://blog.phantom.us/2016/05/09/community-double-play/
+
 For more information on the security solutions at WWT, visit https://www2.wwt.com/solution/security/
