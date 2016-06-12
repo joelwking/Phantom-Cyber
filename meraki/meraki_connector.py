@@ -9,6 +9,7 @@
      29 April 2016  |  1.2 - tested connectivity successfully from UI
      4  May   2016  |  1.3 - Running under UI with output
      5  May   2016  |  1.4 - Added output formatting and search string logic
+     12 June  2016  |  1.5 - Documentation changes
 
      module: meraki_connector.py
      author: Joel W. King, World Wide Technology
@@ -214,7 +215,7 @@ class Meraki_Connector(BaseConnector):
         """
         Return a list of devices in this network
         URI = "https://dashboard.meraki.com/api/v0/networks/L_629378047925028460/devices"
-        return [{u'address': u'5133 swisswood dr, Raleigh, nc 26713', u'lat': 35.9543899, u'lng': -78.721312,
+        return [{u'address': u'swisswood dr, Denton, NC 16713', u'lat': 34.9543899, u'lng': -77.721312,
                  u'mac': u'88:15:44:08:ad:08',  u'model': u'MX64',  u'name': u'SWISSWOOD-MX64', u'serial': u'Q2KN-R9P3-3U6X',
                  u'tags': u' recently-added ', u'wan1Ip': u'192.168.0.3', u'wan2Ip': None}]
         """
@@ -225,7 +226,7 @@ class Meraki_Connector(BaseConnector):
         Return a list of clients associated with this device serial number.
         URI = "https://dashboard.meraki.com/api/v0/devices/Q2HP-NAY7-A2WH/clients?timespan=86400"
         return [{u'description': u'alpha_b-THINK-7', u'dhcpHostname': u'alpha_b-THINK-7', u'id': u'k7c0271',
-                 u'mac': u'60:6c:66:01:21:42',
+                 u'mac': u'60:6c:77:01:22:42',
                  u'mdnsName': None, u'switchport': u'3', u'usage': {u'recv': 14168.0, u'sent': 124917.00000000001}}]
         """
         if timespan > 2592000:
