@@ -15,6 +15,9 @@ https://youtu.be/1lktjQzVcQQ
 
 http://blog.phantom.us/2016/03/31/community-magic/
 
+### Installation
+To install this app download the tarball (f5_firewall.tgz) and follow the app installation instructions in the Phantom documentation, see https://<phantom_host>/docs/admin/apps
+
 ## Metadata Collection
 This utility creates containers and artifacts via the Phantom REST API from metadata off Cisco IP Phones. It is used to programatically create incidents for testing the F5 and Meraki apps.
 
