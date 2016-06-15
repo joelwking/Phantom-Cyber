@@ -7,8 +7,8 @@
     "type": "information service",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "meraki_connector.pyc",
-    "app_version": "1.4",
-    "utctime_updated": "2016-05-5T22:02:18.000000Z",
+    "app_version": "1.5",
+    "utctime_updated": "2016-06-15T22:02:18.000000Z",
     "product_vendor": "Cisco Meraki",
     "product_name": "Cisco Meraki",
     "product_version_regex": ".*",
@@ -27,11 +27,13 @@
         "parameters": {
           "timespan": {
             "description": "The timespan (seconds) for which clients will be fetched. At most one month, 2592000 results less predictable under 300 seconds.",
-            "data_type": "numeric"
+            "data_type": "numeric",
+            "required": true
           },
           "search_string": {
             "description": "Characters to match in the client MAC address or description. Use asterisk * to return all clients.",
-            "data_type": "string"
+            "data_type": "string",
+            "required": true
           }
         },
          "render": {
@@ -111,3 +113,4 @@
         }
     ]
 }
+
