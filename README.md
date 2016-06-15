@@ -1,6 +1,8 @@
 # Phantom-Cyber
 Phantom Playbook and App Contest
 
+https://blog.phantom.us/2016/01/20/2016-playbook-app-contest/
+
 # Blog
 In an effort to demonstrate building and automating the next generation networks, I’ve submitted on behalf of World Wide Technology, these entries in the 2016 Phantom playbook and app contest. 
 
@@ -16,7 +18,7 @@ https://youtu.be/1lktjQzVcQQ
 http://blog.phantom.us/2016/03/31/community-magic/
 
 ### Installation
-To install this app download the tarball (f5_firewall.tgz) and follow the app installation instructions in the Phantom documentation, see https://<phantom_host>/docs/admin/apps
+To install this app download the tarball ( f5_firewall.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
 
 ## Metadata Collection
 This utility creates containers and artifacts via the Phantom REST API from metadata off Cisco IP Phones. It is used to programatically create incidents for testing the F5 and Meraki apps.
@@ -29,5 +31,10 @@ Cisco Meraki is a cloud managed architecture, which is used to deploy, configure
 https://youtu.be/RaUU7evOJi0
 
 https://blog.phantom.us/2016/05/09/community-double-play/
+
+### Installation
+To install this app download the tarball ( meraki.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
+
+# Contact Information
 
 For more information on the security solutions at WWT, visit https://www2.wwt.com/solution/security/
