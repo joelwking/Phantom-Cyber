@@ -7,7 +7,7 @@
     "type": "information service",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "meraki_connector.pyc",
-    "app_version": "1.5",
+    "app_version": "1.6",
     "utctime_updated": "2016-06-15T22:02:18.000000Z",
     "product_vendor": "Cisco Meraki",
     "product_name": "Cisco Meraki",
