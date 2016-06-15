@@ -1,14 +1,14 @@
  {
     "appid"       : "7456078c-9569-4b7b-b888-96fe51e7e0c0",
     "name"      : "F5 BIG-IP",
-    "description" : "This app supports containment actions like 'block ip' on an F5 BIG-IP appliance.",
+    "description" : "This app supports containment actions like 'block ip' or 'unblock ip' on an F5 BIG-IP appliance. There must be a firewall policy (Security››Network Firewall:Policies) configured on the BIG-IP and the name of the policy must be specified in the Action Parameters.",
     "publisher": "World Wide Technology",
     "package_name": "phantom_F5",
-    "type": "information service",
+    "type": "firewall",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "F5_connector.pyc",
-    "app_version": "1.0",
-    "utctime_updated": "2016-03-28T22:02:18.000000Z",
+    "app_version": "2.0",
+    "utctime_updated": "2016-06-14T01:02:03.000000Z",
     "product_vendor": "F5",
     "product_name": "F5 BIG-IP",
     "product_version_regex": ".*",
@@ -28,23 +28,53 @@
         "parameters": {
           "source": {
             "description": "packet source address",
-            "data_type": "string"
+            "data_type": "string",
+            "required": true
           },
           "policy": {
             "description": "Firewall policy name",
-            "data_type": "string"
+            "data_type": "string",
+            "required": true
           },
           "partition": {
             "description": "Partition or path to which the firewall policy belongs",
-            "data_type": "string"
+            "data_type": "string",
+            "required": true
           },
           "rule name": {
             "description": "Rule name e.g. DYNAMIC_BLOCK_byPhantom",
-            "data_type": "string"
+            "data_type": "string",
+            "required": true
           },
           "action": {
             "description": "Specifies the action for the firewall rule, one of: accept, drop, reject, ",
-            "data_type": "string"
+            "data_type": "string",
+            "required": true
+          }
+        },
+        "output": [],
+        "versions": "EQ(*)"},
+      {
+        "action": "unblock ip",
+        "description": "Deletes the rule which blocks an IP address",
+        "type": "contain",
+        "identifier": "unblock ip",
+        "read_only": false,
+        "parameters": {
+          "policy": {
+            "description": "Firewall policy name",
+            "data_type": "string",
+            "required": true
+          },
+          "partition": {
+            "description": "Partition or path to which the firewall policy belongs",
+            "data_type": "string",
+            "required": true
+          },
+          "rule name": {
+            "description": "Rule name e.g. DYNAMIC_BLOCK_byPhantom",
+            "data_type": "string",
+            "required": true
           }
         },
         "output": [],
@@ -52,7 +82,7 @@
         {
          "action": "test connectivity",
          "description": "Validate the asset configuration for connectivity",
-         "verbose": "This action logs into the F5 device using a REST Api call to check validate the asset configuration",
+         "verbose": "This action logs into the F5 device using a REST API call to check validate the asset configuration",
          "type": "test",
          "identifier": "test connectivity",
          "read_only": true,
