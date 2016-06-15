@@ -9,6 +9,7 @@
      30 March 2016  |  1.2 - documentation update
      31 March 2016  |  1.3 - password 'data type' should be password, not string
                              reformatted debug output
+     13 June  2016  |  2.0 - cyber5 branch, new F5 icontrol_install_config module
 
      module: F5_connector.py
      author: Joel W. King, World Wide Technology
@@ -95,22 +96,21 @@ class F5_Connector(BaseConnector):
         self.debug_print("%s TEST_CONNECTIVITY %s" % (self.BANNER, param))
 
         config = self.get_config()
-        username = config.get("username")
-        password = self._normalize_password(config.get("password"))
-        appliance = config.get("device")
-        URI = "%s%s%s" % ("https://", appliance, "/mgmt/tm/ltm")
+        host = config.get("device")
+        F5 = BIG_IP(host=host,
+                    username=config.get("username"),
+                    password=config.get("password"),
+                    uri="/mgmt/tm/sys/software/image",
+                    method="GET")
+        msg = "test connectivity to %s status_code: " % host
 
-        try:
-            r = requests.get(URI, auth=(username, password), headers=self.HEADER, verify=False)
-        except requests.ConnectionError as e:
-            return self.set_status_save_progress(phantom.APP_ERROR, str(e))
-
-        msg = "test connectivity to %s status_code: %s %s" % (appliance, r.status_code, httplib.responses[r.status_code])
-
-        if r.status_code == 200:
-            return self.set_status_save_progress(phantom.APP_SUCCESS, msg)
+        if F5.genericGET():
+            # True is success
+            return self.set_status_save_progress(phantom.APP_SUCCESS, msg + "%s %s" % (F5.status_code, httplib.responses[F5.status_code]))
         else:
-            return self.set_status_save_progress(phantom.APP_ERROR, msg)
+            # None or False, is a failure based on incorrect IP address, username, passords
+            return self.set_status_save_progress(phantom.APP_ERROR, msg + "%s %s" % (F5.status_code, F5.response))
+
 
     def handle_action(self, param):
         """
@@ -127,11 +127,18 @@ class F5_Connector(BaseConnector):
         self.debug_print("%s HANDLE_ACTION action_id:%s parameters:\n%s" % (self.BANNER, action_id, param))
 
         supported_actions = {"test connectivity": self._test_connectivity,
-                            "block ip": self.block_ip}
+                            "block ip": self.block_ip,
+                            "unblock ip": self.unblock_ip}
 
         run_action = supported_actions[action_id]
 
         return run_action(param)
+
+    def unblock_ip(self, param):
+        """
+        Release an IP address by deleting the rule which originally blocked the source IP address.
+        """
+        return None
 
     def block_ip(self, param):
         """
