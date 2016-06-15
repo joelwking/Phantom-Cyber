@@ -9,8 +9,8 @@
      29 April 2016  |  1.2 - tested connectivity successfully from UI
      4  May   2016  |  1.3 - Running under UI with output
      5  May   2016  |  1.4 - Added output formatting and search string logic
-     12 June  2016  |  1.5 - Documentation 
-     15 June  2016  |  1.6 - W292 no newline at end of file
+     12 June  2016  |  1.5 - Documentation
+     15 June  2016  |  1.6 - W292 no newline at end of file and W291 trailing whitespace
 
      module: meraki_connector.py
      author: Joel W. King, World Wide Technology
@@ -300,4 +300,3 @@ if __name__ == '__main__':
         print ("%s %s" % (connector.BANNER, json.dumps(json.loads(ret_val), indent=4)))
 
     exit(0)
-    
