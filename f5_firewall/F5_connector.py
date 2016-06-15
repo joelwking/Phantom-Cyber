@@ -9,20 +9,21 @@
      30 March 2016  |  1.2 - documentation update
      31 March 2016  |  1.3 - password 'data type' should be password, not string
                              reformatted debug output
-     13 June  2016  |  2.0 - cyber5 branch, new F5 icontrol_install_config module
+     14 June  2016  |  2.0 - cyber5 branch, new F5 icontrol_install_config module
 
      module: F5_connector.py
      author: Joel W. King, World Wide Technology
-     short_description: This Phantom app supports containment actions like 'block ip' on an F5 BIG-IP appliance.
+     short_description: This Phantom app supports containment actions like 'block ip' or 'unblock ip' on an F5 BIG-IP appliance.
 
-    remarks: The appdev tutorial is at  https://10.255.78.71/docs/appdev/tutorial
+    remarks: The appdev tutorial is at  https://<phantom IP>/docs/appdev/tutorial
 
-             ssh phantom@10.255.78.71
+             ssh phantom@<phantom IP>
              export PYTHONPATH=/opt/phantom/lib/:/opt/phantom/www/
              export REQUESTS_CA_BUNDLE=/opt/phantom/etc/cacerts.pem
              cd ./app_dev/f5_firewall
              touch __init__.py
              ../compile_app.py -i
+             python2.7 ./F5_connector.py ./test_jsons/test.json
 
 """
 #
@@ -36,14 +37,13 @@ from phantom.action_result import ActionResult
 #
 import simplejson as json
 import time
-import requests
 import httplib
 #
 #  application imports
 #
 import icontrol_install_config as iControl                 # https://github.com/joelwking/ansible-f5/blob/master/icontrol_install_config.py
 try:
-    from F5_Connector_consts import *                      # file name would be ./F5_Connector_consts.py
+    from F5_connector_consts import *                      # file name would be ./F5_connector_consts.py
 except ImportError:
     pass                                                   # this is an optional file, used to bring in constants
 
@@ -64,7 +64,7 @@ class F5_Connector(BaseConnector):
         of any internal modules. This function MUST return a value of either phantom.APP_SUCCESS or phantom.APP_ERROR.
         If this function returns phantom.APP_ERROR, then AppConnector::handle_action will not get called.
         """
-        self.debug_print("%s INITIALIZE %s" % (self.BANNER, time.asctime()))
+        self.debug_print("%s INITIALIZE %s" % (F5_Connector.BANNER, time.asctime()))
         return phantom.APP_SUCCESS
 
     def finalize(self):
@@ -74,7 +74,7 @@ class F5_Connector(BaseConnector):
         multiple handle_action function calls and create any summary if required. Another usage is cleanup, disconnect
         from remote devices etc.
         """
-        self.debug_print("%s FINALIZE" % self.BANNER)
+        self.debug_print("%s FINALIZE" % F5_Connector.BANNER)
         return
 
     def handle_exception(self, exception_object):
@@ -84,7 +84,7 @@ class F5_Connector(BaseConnector):
         AppConnector::handle_exception() to do any cleanup of it's own if required. This exception is then added to the
         connector run result and passed back to spawn, which gets displayed in the Phantom UI.
         """
-        self.debug_print("%s HANDLE_EXCEPTION %s" % (self.BANNER, exception_object))
+        self.debug_print("%s HANDLE_EXCEPTION %s" % (F5_Connector.BANNER, exception_object))
         return
 
     def _test_connectivity(self, param):
@@ -93,11 +93,11 @@ class F5_Connector(BaseConnector):
         Use a basic query to determine if the IP address, username and password is correct,
             curl -k -u admin:redacted -X GET https://192.0.2.1/mgmt/tm/ltm/
         """
-        self.debug_print("%s TEST_CONNECTIVITY %s" % (self.BANNER, param))
+        self.debug_print("%s TEST_CONNECTIVITY %s" % (F5_Connector.BANNER, param))
 
         config = self.get_config()
         host = config.get("device")
-        F5 = BIG_IP(host=host,
+        F5 = iControl.BIG_IP(host=host,
                     username=config.get("username"),
                     password=config.get("password"),
                     uri="/mgmt/tm/sys/software/image",
@@ -111,7 +111,6 @@ class F5_Connector(BaseConnector):
             # None or False, is a failure based on incorrect IP address, username, passords
             return self.set_status_save_progress(phantom.APP_ERROR, msg + "%s %s" % (F5.status_code, F5.response))
 
-
     def handle_action(self, param):
         """
         This function implements the main functionality of the AppConnector. It gets called for every param dictionary element
@@ -124,7 +123,7 @@ class F5_Connector(BaseConnector):
         """
 
         action_id = self.get_action_identifier()           # action_id determines what function to execute
-        self.debug_print("%s HANDLE_ACTION action_id:%s parameters:\n%s" % (self.BANNER, action_id, param))
+        self.debug_print("%s HANDLE_ACTION action_id:%s parameters:\n%s" % (F5_Connector.BANNER, action_id, param))
 
         supported_actions = {"test connectivity": self._test_connectivity,
                             "block ip": self.block_ip,
@@ -136,9 +135,34 @@ class F5_Connector(BaseConnector):
 
     def unblock_ip(self, param):
         """
-        Release an IP address by deleting the rule which originally blocked the source IP address.
+        Allow the IP address by deleting the rule which originally blocked the source IP address.
+
+        URL https://10.255.111.100/mgmt/tm/security/firewall/policy/~Common~Phantom_Inbound/rules/sourceIP_8.8.8.8
         """
-        return None
+
+        config = self.get_config()
+        self.debug_print("%s UNBLOCK_IP parameters:\n%s \nconfig:%s" % (F5_Connector.BANNER, param, config))
+
+        action_result = ActionResult(dict(param))          # Add an action result to the App Run
+        self.add_action_result(action_result)
+
+        URL = "/mgmt/tm/security/firewall/policy/~%s~%s/rules/%s" % (param["partition"], param["policy"], param["rule name"])
+        self.debug_print("%s UNBLOCK_IP URL: %s" % (F5_Connector.BANNER, URL))
+
+        F5 = iControl.BIG_IP(host=config.get("device"),
+                             username=config.get("username"),
+                             password=config.get("password"),
+                             uri=URL,
+                             method="DELETE")
+
+        if F5.genericDELETE():
+            action_result.set_status(phantom.APP_SUCCESS)
+        else:
+            action_result.set_status(phantom.APP_ERROR)
+
+        action_result.add_data(F5.response)
+        self.debug_print("%s UNBLOCK_IP code: %s \nresponse: %s" % (F5_Connector.BANNER, F5.status_code, F5.response))
+        return
 
     def block_ip(self, param):
         """
@@ -151,7 +175,7 @@ class F5_Connector(BaseConnector):
 
         """
         config = self.get_config()
-        self.debug_print("%s BLOCK_IP parameters:\n%s \nconfig:%s" % (self.BANNER, param, config))
+        self.debug_print("%s BLOCK_IP parameters:\n%s \nconfig:%s" % (F5_Connector.BANNER, param, config))
 
         action_result = ActionResult(dict(param))          # Add an action result to the App Run
         self.add_action_result(action_result)
@@ -160,42 +184,23 @@ class F5_Connector(BaseConnector):
         body = '{"name":"%s","action":"%s","place-after":"first","source":{"addresses":[{"name":"%s/32"}]}}' \
                % (param["rule name"], param["action"], param["source"])
 
-        self.debug_print("%s BLOCK_IP URL: %s \nbody:%s" % (self.BANNER, URL, body))
+        self.debug_print("%s BLOCK_IP URL: %s \nbody:%s" % (F5_Connector.BANNER, URL, body))
 
-        password = self._normalize_password(config.get("password"))
-        F5 = iControl.Connection(host=config.get("device"), username=config.get("username"), password=password)
+        F5 = iControl.BIG_IP(host=config.get("device"),
+                             username=config.get("username"),
+                             password=config.get("password"),
+                             uri=URL,
+                             method="POST")
 
-        uri, body = F5.standarize_body_url(URL, body)
-        code, changed, response = iControl.install_config(F5, uri, body)
-        self.debug_print("%s BLOCK_IP code: %s \nchanged: %s \nresponse: %s" % (self.BANNER, code, changed, response))
-
-        if code == 0:
-           action_result.set_status(phantom.APP_SUCCESS)
+        if F5.genericPOST(body):
+            action_result.set_status(phantom.APP_SUCCESS)
         else:
             action_result.set_status(phantom.APP_ERROR)
 
-        action_result.add_data(response)                   # response data should be more precicely formatted
+        action_result.add_data(F5.response)
+        self.debug_print("%s BLOCK_IP code: %s \nresponse: %s" % (F5_Connector.BANNER, F5.status_code, F5.response))
         return
 
-    def _normalize_password(self, password):
-        """
-        To prevent our passwords from showing on the screen in demos, we import the password of the asset
-        from the optional constants file, and then if the password is 'redacted' we substitute the correct password
-        If there is no global variable called REDACTED, then we assume the suplied password is what they want to use
-
-        Note: you should code your json configuration file for the password to have a data-type of password rather
-        than string. Then the password will not be shown on the UI.
-        """
-
-        if password.upper() == "REDACTED":
-            try:
-                type(REDACTED)
-            except NameError:
-                pass                                       # password might actually be the string 'redacted'
-            else:
-                password = REDACTED
-
-        return password
 
 # ==========================================================================================
 # Logic for testing interactively e.g. python2.7 ./F5_connector.py ./test_jsons/reject.json
