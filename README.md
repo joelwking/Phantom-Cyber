@@ -19,6 +19,10 @@ https://youtu.be/1lktjQzVcQQ
 
 http://blog.phantom.us/2016/03/31/community-magic/
 
+This app is also referenced on F5 DevCentral as part of the *June is Programmability Month!* initiative.
+
+https://devcentral.f5.com/codeshare/f5-big-ip-phantom-cyber-app-915
+
 ### Installation
 To install this app download the tarball ( f5_firewall.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
 
