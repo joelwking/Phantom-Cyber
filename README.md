@@ -3,6 +3,8 @@ Phantom Playbook and App Contest
 
 https://blog.phantom.us/2016/01/20/2016-playbook-app-contest/
 
+These contributions to the contest were recognized as a first place (tie) entry at the 17 June 2016 webinar.
+
 # Blog
 In an effort to demonstrate building and automating the next generation networks, I’ve submitted on behalf of World Wide Technology, these entries in the 2016 Phantom playbook and app contest. 
 
