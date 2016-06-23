@@ -1,22 +1,22 @@
  {
     "appid"       : "916f12d2-7f9b-4bfa-acff-027514e2b489",
     "name"      : "Cisco Meraki Dashboard",
-    "description" : "This app interfaces with the Cisco Meraki cloud managed devices.",
+    "description" : "This app interfaces with the Cisco Meraki cloud managed devices. The search string specified is used to match a value in the client MAC address or description field. The default dashboard URL is dashboard.meraki.com. The API Key is generated in your account profile. An account with read only privileges is acceptable.",
     "publisher": "World Wide Technology",
     "package_name": "phantom_meraki",
     "type": "information service",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "meraki_connector.pyc",
-    "app_version": "1.6",
-    "utctime_updated": "2016-06-15T22:02:18.000000Z",
+    "app_version": "1.7",
+    "utctime_updated": "2016-06-23T22:02:18.000000Z",
     "product_vendor": "Cisco Meraki",
     "product_name": "Cisco Meraki",
     "product_version_regex": ".*",
     "min_phantom_version": "1.0.240",
     "logo": "cisco-meraki.png",
     "url": "https://github.com/joelwking/Phantom-Cyber/meraki",
-    "configuration": {"Meraki-API-Key": {"description": "Meraki API key for your account", "data_type": "string", "required": true},
-                     "dashboard": {"description": "Dashboard URL, default is dashboard.meraki.com", "data_type": "string", "required": false}},
+    "configuration": {"Meraki-API-Key": {"description": "Meraki API key", "data_type": "string", "required": true},
+                     "dashboard": {"description": "Dashboard URL", "data_type": "string", "required": false}},
     "actions": [
       {
         "action": "locate device",
@@ -26,12 +26,13 @@
         "read_only": true,
         "parameters": {
           "timespan": {
-            "description": "The timespan (seconds) for which clients will be fetched. At most one month, 2592000 results less predictable under 300 seconds.",
+            "description": "Timespan (seconds)",
             "data_type": "numeric",
             "required": true
           },
           "search_string": {
-            "description": "Characters to match in the client MAC address or description. Use asterisk * to return all clients.",
+            "description": "Match in MAC or description. Asterisk * returns all.",
+            "primary": true,
             "data_type": "string",
             "required": true
           }
@@ -45,6 +46,7 @@
         "output": [
         {
           "data_path": "action_result.data.*.client.mac",
+          "contains": ["mac address"],
           "data_type": "string",
           "column_name": "Client MAC",
           "column_order": 0
