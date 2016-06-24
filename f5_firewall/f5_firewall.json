@@ -1,14 +1,14 @@
  {
     "appid"       : "7456078c-9569-4b7b-b888-96fe51e7e0c0",
     "name"      : "F5 BIG-IP",
-    "description" : "This app supports containment actions like 'block ip' or 'unblock ip' on an F5 BIG-IP appliance. There must be a firewall policy (Security››Network Firewall:Policies) configured on the BIG-IP and the name of the policy must be specified in the Action Parameters.",
+    "description" : "This app supports containment actions like 'block ip' or 'unblock ip' on an F5 BIG-IP appliance. There must be a firewall policy (Security››Network Firewall:Policies) configured on the BIG-IP and the name of the policy must be specified in the Action Parameters. The rule name can be the source IP address appended to a keyword string, e.g. 'Phantom' + ip",
     "publisher": "World Wide Technology",
     "package_name": "phantom_F5",
     "type": "firewall",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "F5_connector.pyc",
-    "app_version": "2.0",
-    "utctime_updated": "2016-06-14T01:02:03.000000Z",
+    "app_version": "2.1",
+    "utctime_updated": "2016-06-24T01:02:03.000000Z",
     "product_vendor": "F5",
     "product_name": "F5 BIG-IP",
     "product_version_regex": ".*",
@@ -28,6 +28,8 @@
         "parameters": {
           "source": {
             "description": "packet source address",
+            "contains": [ "ip" ],
+            "primary": true,
             "data_type": "string",
             "required": true
           },
@@ -37,18 +39,19 @@
             "required": true
           },
           "partition": {
-            "description": "Partition or path to which the firewall policy belongs",
+            "description": "Partition or path of the firewall policy",
             "data_type": "string",
             "required": true
           },
           "rule name": {
-            "description": "Rule name e.g. DYNAMIC_BLOCK_byPhantom",
+            "description": "Rule name",
             "data_type": "string",
             "required": true
           },
           "action": {
-            "description": "Specifies the action for the firewall rule, one of: accept, drop, reject, ",
+            "description": "Rule action",
             "data_type": "string",
+            "value_list": ["accept","drop", "reject"],
             "required": true
           }
         },
@@ -57,7 +60,7 @@
       {
         "action": "unblock ip",
         "description": "Deletes the rule which blocks an IP address",
-        "type": "contain",
+        "type": "correct",
         "identifier": "unblock ip",
         "read_only": false,
         "parameters": {
@@ -67,12 +70,12 @@
             "required": true
           },
           "partition": {
-            "description": "Partition or path to which the firewall policy belongs",
+            "description": "Partition or path of the firewall policy",
             "data_type": "string",
             "required": true
           },
           "rule name": {
-            "description": "Rule name e.g. DYNAMIC_BLOCK_byPhantom",
+            "description": "Rule name",
             "data_type": "string",
             "required": true
           }
