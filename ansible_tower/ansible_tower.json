@@ -1,0 +1,56 @@
+ {
+    "appid"       : "56424515-263a-4fea-8a96-54e43d01a682",
+    "name"      : "Ansible Tower",
+    "description" : "This app runs a job template on Ansible Tower. The job template can be specified by its name or numeric value. Because Ansible playbooks can run for several minutes to hours, a dead interval can be specified so the ",
+    "publisher": "World Wide Technology",
+    "package_name": "ansible_tower",
+    "type": "generic",
+    "license": "Copyright (c) World Wide Technology, Inc. 2016",
+    "main_module" : "ansible_tower_connector.pyc",
+    "app_version": "1.0",
+    "utctime_updated": "2016-07-14T01:02:03.000000Z",
+    "product_vendor": "Ansible by RedHat",
+    "product_name": "Ansible Tower",
+    "product_version_regex": ".*",
+    "min_phantom_version": "1.0.240",
+    "logo": "ansible.png",
+    "url": "https://github.com/joelwking/Phantom-Cyber",
+    "configuration": {"tower_instance": {"description": "Ansible Tower IP/Hostname", "data_type": "string", "required": true},
+                      "username": {"description": "username", "data_type": "string", "required": true},
+                      "password": {"description": "password", "data_type": "password", "required": true}},
+    "actions": [
+      {
+        "action": "run job",
+        "description": "launches a job template",
+        "type": "contain",
+        "identifier": "run job",
+        "read_only": false,
+        "parameters": {
+          "dead interval": {
+            "description": "dead interval",
+            "data_type": "numeric",
+            "required": false
+          },
+          "job template id": {
+            "description": "Job template name or id",
+            "primary": true,
+            "data_type": "string",
+            "required": true
+          }
+        },
+        "output": [],
+        "versions": "EQ(*)"},
+        {
+         "action": "test connectivity",
+         "description": "Validate the asset configuration for connectivity",
+         "verbose": "This action logs into Ansible Tower using a REST API call to check validate the asset configuration",
+         "type": "test",
+         "identifier": "test connectivity",
+         "read_only": true,
+         "parameters": {
+         },
+        "output": [],
+        "versions":"EQ(*)"
+        }
+    ]
+}
