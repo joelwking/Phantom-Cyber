@@ -6,7 +6,9 @@
      Revision history:
      16 May   2016  |  1.0 - initial release
      21 June  2016  |  1.1 - Changes for discussion with Naasief on BGP Remote Trigger Black Hole
-     14 July  2017  |  1.2 - migrated unit test code into Phantom format
+     14 July  2016  |  1.2 - migrated unit test code into Phantom format
+     22 July  2016  |  1.3 - added action_result.set_status
+     25 July  2016  |  1.4 - testing, added output fields
 
      module: ansible_tower_connector.py
      author: Joel W. King, World Wide Technology
@@ -140,7 +142,7 @@ class Tower_Connector(BaseConnector):
             self.set_status_save_progress(phantom.APP_ERROR, str(e))
             return dict()
 
-        self.send_progress("query_api: %s" % r.status_code)
+        self.debug_print("%s QUERY_API %s" % (Tower_Connector.BANNER, r.status_code))
         try:
             return r.json()
         except ValueError:                                 # If you get a 404 error, throws a ValueError exception
@@ -160,7 +162,7 @@ class Tower_Connector(BaseConnector):
         """launch the job specified by its job_template_id
 
         """
-        self.debug_print("%s LOCATE_DEVICE parameters:\n%s" % (Tower_Connector.BANNER, param))
+        self.debug_print("%s LAUNCH_JOB parameters:\n%s\n%s" % (Tower_Connector.BANNER, param, job_template_id))
 
         action_result = ActionResult(dict(param))          # Add an action result to the App Run
         self.add_action_result(action_result)
@@ -168,8 +170,19 @@ class Tower_Connector(BaseConnector):
         URI = "https://%s/api/v1/job_templates/%s/launch/" % (self.tower_instance, job_template_id)
         header = self.HEADER
         header["Authorization"] = "Token %s" % self.token
+
+        # send any ansible extra vars along with the post request to launch the job
+        """
         try:
-            r = requests.post(URI, headers=header, verify=False)
+            data = dict(extra_vars=param["extra vars"])    # This works in test.json  "extra vars": "{\"malicious_ip\": \"203.0.113.10\"}"
+        except ValueError:
+            return "ValueError"
+        """
+        # In the extra_vars field, specify "malicious_ip=203.0.113.10,foo=bar" with no leading spaces
+        data = dict(extra_vars='%s' % dict((e.split('=') for e in param["extra vars"].split(','))))
+
+        try:
+            r = requests.post(URI, headers=header, data=json.dumps(data), verify=False)
         except requests.ConnectionError as e:
             self.set_status_save_progress(phantom.APP_ERROR, str(e))
             return "ConnectionError"
@@ -203,13 +216,28 @@ class Tower_Connector(BaseConnector):
             return True
         return False
 
+    def set_dead_interval(self, param):
+        " "
+        try:
+            self.alive = int(param["dead interval"])
+        except KeyError:
+            pass                                           # Key does not exist
+        except TypeError:
+            pass                                           # NoneType cant be converted to interger
+        self.debug_print("%s SET_DEAD_INTERVAL interval: %s" % (Tower_Connector.BANNER, self.alive))
+        return
+
     def run_job(self, param):
         """ Optionally set the dead interval, logon, determine if the user specified a job template name or the numeric id.
             Launch the job template. If the job was accepted (202 status_code), wait up to the dead interval for the job to
             complete and report back the job id. This numeric job id is specified on the Jobs tab in Ansible Tower.
         """
-        if param["dead interval"]:                         # optional, expecting None of not present
-            self.alive = param["dead interval"]
+
+        self.debug_print("%s RUN_JOB parameters:\n%s" % (Tower_Connector.BANNER, param))
+        action_result = ActionResult(dict(param))          # Add an action result to the App Run
+        self.add_action_result(action_result)
+
+        self.set_dead_interval(param)
 
         self.aaaLogin()
         if not self.token:
@@ -228,7 +256,13 @@ class Tower_Connector(BaseConnector):
             results = self.wait_for_completion()
             if results:
                 msg = "job id: %s status: %s name: %s elapsed time: %s sec ended: %s" % (self.job_id, results["status"], results["name"], results["elapsed"], results["finished"])
-                self.set_status(phantom.APP_SUCCESS, status_message=msg)
+                action_result.add_data({"job_stats": {"id": self.job_id, "status": results["status"], "name": results["name"], "elapsed": results["elapsed"]}})
+                if results["status"] == 'failed':
+                    action_result.set_status(phantom.APP_ERROR)
+                    self.set_status_save_progress(phantom.APP_ERROR, status_message=msg)
+                else:
+                    action_result.set_status(phantom.APP_SUCCESS)
+                    self.set_status_save_progress(phantom.APP_SUCCESS, status_message=msg)
             else:
                 # nothing to do here, results are None due to an error which has been reported
                 pass
@@ -278,6 +312,6 @@ if __name__ == '__main__':
         connector = Tower_Connector()
         connector.print_progress_message = True
         ret_val = connector._handle_action(json.dumps(in_json), None)
-        print ("%s %s" % (connector.BANNER, json.dumps(json.loads(ret_val), indent=4)))
+        print ("__main__%s %s" % (connector.BANNER, json.dumps(json.loads(ret_val), indent=4)))
 
     exit(0)

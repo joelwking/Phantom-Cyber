@@ -1,15 +1,15 @@
  {
     "appid"       : "56424515-263a-4fea-8a96-54e43d01a682",
     "name"      : "Ansible Tower",
-    "description" : "This app runs a job template on Ansible Tower. The job template can be specified by its name or numeric value. Because Ansible playbooks can run for several minutes to hours, a dead interval can be specified so the ",
+    "description" : "This app launches a job template on Ansible Tower. The job template can be specified by its name or numeric value. Ansible extra vars can be specified to the playbook. After a successful launch, the app waits for the job to complete to return the job status, up to the specified dead interval iterations.",
     "publisher": "World Wide Technology",
     "package_name": "ansible_tower",
     "type": "generic",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "ansible_tower_connector.pyc",
-    "app_version": "1.0",
-    "utctime_updated": "2016-07-14T01:02:03.000000Z",
-    "product_vendor": "Ansible by RedHat",
+    "app_version": "1.4",
+    "utctime_updated": "2016-07-22T01:02:03.000000Z",
+    "product_vendor": "Ansible Tower by RedHat",
     "product_name": "Ansible Tower",
     "product_version_regex": ".*",
     "min_phantom_version": "1.0.240",
@@ -21,15 +21,19 @@
     "actions": [
       {
         "action": "run job",
-        "description": "launches a job template",
-        "type": "contain",
+        "description": "Launches an Ansible Tower job template.",
+        "type": "generic",
         "identifier": "run job",
         "read_only": false,
         "parameters": {
           "dead interval": {
-            "description": "dead interval",
+            "description": "Dead interval",
             "data_type": "numeric",
             "required": false
+          },
+           "extra vars": {
+             "description": "Ansible extra vars",
+             "data_type": "string"
           },
           "job template id": {
             "description": "Job template name or id",
@@ -38,12 +42,83 @@
             "required": true
           }
         },
-        "output": [],
+        "render": {
+        "width": 12,
+        "title": "Ansible Tower Launch (run) Job",
+        "type": "table",
+        "height": 5
+        },
+        "output": [
+        {
+          "data_path": "action_result.id",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.job_stats.id",
+          "data_type": "numeric",
+          "column_name": "Job Id",
+          "column_order": 0
+        },
+        {
+          "data_path": "action_result.data.*.job_stats.status",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.data.*.job_stats.name",
+          "column_name": "Job Name",
+          "column_order": 2,
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string",
+          "column_name": "Status",
+          "column_order": 1
+        },
+        {
+          "data_path": "action_result.data.*.job_stats.elapsed",
+          "data_type": "string",
+          "column_name": "Elapsed",
+          "column_order": 3
+        },
+        {
+          "data_path": "action_result.context.artifact_id",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.parameter.context.artifact_id",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.parameter.extra vars",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.parameter.dead interval",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "action_result.parameter.job template id",
+          "data_type": "string"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric"
+        }
+        ],
         "versions": "EQ(*)"},
         {
          "action": "test connectivity",
-         "description": "Validate the asset configuration for connectivity",
-         "verbose": "This action logs into Ansible Tower using a REST API call to check validate the asset configuration",
+         "description": "Validate the asset configuration for connectivity.",
+         "verbose": "This action logs into Ansible Tower using a REST API call to check validate the asset configuration.",
          "type": "test",
          "identifier": "test connectivity",
          "read_only": true,
