@@ -9,6 +9,7 @@
      14 July  2016  |  1.2 - migrated unit test code into Phantom format
      22 July  2016  |  1.3 - added action_result.set_status
      25 July  2016  |  1.4 - testing, added output fields
+     26 July  2016  |  1.5 - testing with Ansible 3.0
 
      module: ansible_tower_connector.py
      author: Joel W. King, World Wide Technology
@@ -45,6 +46,9 @@ class Tower_Connector(BaseConnector):
     """
     BANNER = "ANSIBLE_TOWER"
     ACTIVE_JOB_STATES = ("running", "waiting", "pending")
+    GOOD_LAUNCH_STATES = ("Accepted", "Created")          # Ansible 2.45 to 3.0 update
+    GOOD_LAUNCH_STATUS = (202, 201)                       # Ansible 2.45 to 3.0 update
+    FAILED_JOB_STATES = ("failed")
     SLEEP_TIME = 10
 
     def __init__(self):
@@ -145,9 +149,9 @@ class Tower_Connector(BaseConnector):
         self.debug_print("%s QUERY_API %s" % (Tower_Connector.BANNER, r.status_code))
         try:
             return r.json()
-        except ValueError:                                 # If you get a 404 error, throws a ValueError exception
-            return dict()
-        return dict()
+        except:
+            return dict(status=str(r.status_code))
+        return dict(status="query_api unknown error")
 
     def get_job_template_id(self, job_to_run, jobs):
         "User specified the job name, we need to get the corresponding job template id"
@@ -171,15 +175,12 @@ class Tower_Connector(BaseConnector):
         header = self.HEADER
         header["Authorization"] = "Token %s" % self.token
 
-        # send any ansible extra vars along with the post request to launch the job
-        """
+        # Ansible 3.0, Prompt on launch must be specified in the job template on the Tower GUI
+        # On the Phantom GUI specify as follows: "malicious_ip=203.0.113.10,foo=bar" with no leading spaces
         try:
-            data = dict(extra_vars=param["extra vars"])    # This works in test.json  "extra vars": "{\"malicious_ip\": \"203.0.113.10\"}"
-        except ValueError:
-            return "ValueError"
-        """
-        # In the extra_vars field, specify "malicious_ip=203.0.113.10,foo=bar" with no leading spaces
-        data = dict(extra_vars='%s' % dict((e.split('=') for e in param["extra vars"].split(','))))
+            data = dict(extra_vars='%s' % dict((e.split('=') for e in param["extra vars"].split(','))))
+        except KeyError:
+            data = {}                                      # extra vars is optional
 
         try:
             r = requests.post(URI, headers=header, data=json.dumps(data), verify=False)
@@ -187,7 +188,7 @@ class Tower_Connector(BaseConnector):
             self.set_status_save_progress(phantom.APP_ERROR, str(e))
             return "ConnectionError"
 
-        if r.status_code is 202:                           # 202 'Accepted'
+        if r.status_code in Tower_Connector.GOOD_LAUNCH_STATUS:
             self.job_id = r.json()['job']
 
         return httplib.responses[r.status_code]
@@ -240,24 +241,26 @@ class Tower_Connector(BaseConnector):
         self.set_dead_interval(param)
 
         self.aaaLogin()
-        if not self.token:
-            pass                                           # token will be null if we failed to login
+        if not self.token:                                 # token will be null if we failed to login
+            action_result.set_status(phantom.APP_ERROR)
+            self.set_status_save_progress(phantom.APP_ERROR, status_message="Failed to logon")
+            return
 
-        # determine if supplied a numeric job or a string representing the job to run
         try:
+            # Job template id used to identify the job template
             job_template_id = int(param["job template id"])
         except ValueError:
-            # user specified a string, attempt to obtain the job_id from the text specified
+            # Job template name is used to identify the job template
             job_template_id = self.get_job_template_id(param["job template id"], self.query_api("/api/v1/job_templates/")["results"])
 
-        # attempt to launch the job specified
+        # Launch the job specified
         status = self.launch_job(param, job_template_id)
-        if status is "Accepted":
+        if status in Tower_Connector.GOOD_LAUNCH_STATES:
             results = self.wait_for_completion()
             if results:
                 msg = "job id: %s status: %s name: %s elapsed time: %s sec ended: %s" % (self.job_id, results["status"], results["name"], results["elapsed"], results["finished"])
                 action_result.add_data({"job_stats": {"id": self.job_id, "status": results["status"], "name": results["name"], "elapsed": results["elapsed"]}})
-                if results["status"] == 'failed':
+                if results["status"] in Tower_Connector.FAILED_JOB_STATES:
                     action_result.set_status(phantom.APP_ERROR)
                     self.set_status_save_progress(phantom.APP_ERROR, status_message=msg)
                 else:
