@@ -41,6 +41,12 @@ https://blog.phantom.us/2016/05/09/community-double-play/
 ### Installation
 To install this app download the tarball ( meraki.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
 
+## Ansible Tower app
+Ansible Tower is a enterprice licensed GUI for managing Ansible workflows. This Phantom app implements an interface to run (launch) job templates defined in Ansible Tower from Phantom. Variables can be passed from a Phantom playbook to the job template. Ansible is a force multiplier for Phantom, as it provides a means to execute simple to complex playbooks written for Ansible from Phantom.
+
+### Installation
+This code at the minimum working example stage and testing and development continues.
+
 # Contact Information
 
 For more information on the security solutions at WWT, visit https://www2.wwt.com/solution/security/
