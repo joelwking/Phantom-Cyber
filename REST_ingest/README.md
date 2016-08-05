@@ -39,8 +39,8 @@ Add meta data, or an empty dictionary if none.
 meta_data = {"Influenced by": "John Locke, William Shakespeare, Isaac Newton", "Born": "November 21, 1694",
              "quote": "Judge of a man by his questions rather than by his answers."}
 meta_data = {}
-
-Add the artifact
+```
+Add the artifact.
 ```
 artifact_id = p.add_artifact(container_id, cef, meta_data, **art_i_fact)
 print p.status_code
@@ -48,7 +48,6 @@ print p.status_code
 Each container can have no artifacts, or one or more artifacts.
 
 # Boilerplate
-
 Copyright (c) 2016 World Wide Technology, Inc.
 All rights reserved.
 
