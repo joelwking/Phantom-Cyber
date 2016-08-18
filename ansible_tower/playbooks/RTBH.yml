@@ -1,0 +1,59 @@
+---
+#
+#      Copyright (c) 2016 World Wide Technology, Inc.
+#      All rights reserved.
+#
+#      author: Joel W. King,  World Wide Technology
+#
+#      This playbook is an example of using the new Ansible network module for IOS routers to apply
+#      a configuration change and save the running configuration. Either the host entry, the group vars
+#      or playbook should specify the connection is local and the ssh user of the initiating machine. 
+#      An example inventory file would look like the following:
+#
+#      [RTBH]
+#      10.255.138.123 ansible_connection=local ansible_ssh_user=administrator
+#      10.255.138.122 ansible_connection=local ansible_ssh_user=administrator
+#
+#      The router password and enable password are encrypted by Ansible Vault in file passwords.yml.
+#
+#      For information on how to configure a BGP remote trigger black hole, Refer to: 
+#      http://www.cisco.com/c/dam/en/us/products/collateral/security/ios-network-foundation-protection-nfp/prod_white_paper0900aecd80313fac.pdf
+#
+- name:   IOS router configuration change
+  hosts:  RTBH
+  gather_facts: no
+
+  tasks:
+  - name: Decrypt the password file
+    include_vars: "./passwords.yml"
+    
+  - name: Debug extra vars field
+    debug: msg="{{malicious_ip}}"
+
+  - name: Use the new Ansible IOS network module
+    ios_config:
+      username: admin
+      authorize: yes
+      host: "{{inventory_hostname}}"
+      password: "{{password}}"
+      auth_pass: "{{enable_password}}"
+      force: yes
+      lines:
+        - "! Add a route to the null interface"
+        - "ip route {{malicious_ip}} 255.255.255.255 Null0 tag 66 name BGP_RTBH"
+        - "! Needed to allow copy run start without a prompt"
+        - "file prompt quiet"
+
+  - name: Save the running IOS configuration
+    ios_command:
+      username: admin
+      authorize: yes
+      host: "{{inventory_hostname}}"
+      password: "{{password}}"
+      auth_pass: "{{enable_password}}"
+      commands:
+        - "! The write memory command has been replaced by the copy system:running-config nvram: startup-config command."
+        - "write memory"
+        - "! without 'file prompt quiet' configured, the following command will fail due to the prompt"
+        - "copy system:running-config nvram:startup-config"
+        - "send log 5 Configured by Ansible network module(s)"
