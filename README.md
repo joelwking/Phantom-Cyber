@@ -50,8 +50,21 @@ To install this app download the tarball ( meraki.tgz ) and follow the app insta
 ## Ansible Tower app
 Ansible Tower is a enterprice licensed GUI for managing Ansible workflows. This Phantom app implements an interface to run (launch) job templates defined in Ansible Tower from Phantom. Variables can be passed from a Phantom playbook to the job template. Ansible is a force multiplier for Phantom, as it provides a means to execute simple to complex playbooks written for Ansible from Phantom.
 
+While this app provides a high degree of flexibility to security operations, only the success or failure of the job launched in Ansible Tower is returned to the Phantom playbook, which means output cannot be used in subsequent playbook steps. 
+
+A sample configurations for implementing a Remote Triggered Black Hole, adding a static route to a Cisco router, is provided in this powerpoint slide deck, for both Phantom and Ansible. 
+
+http://www.slideshare.net/joelwking/phantom-app-ansible-tower
+
+The Ansible playbook ( RTBH.yml ) and the Phantom playbook ( Remote_Trigger_Black_Hole.py ) are provided in the repository.
+
+A youtube video is available demonstrating how a Cisco ACI fabric configuration can be modified from Phantom. 
+The Phantom playbook ( Dropzone_2.py ) and the Ansible playbook ( dbgacEpgToIp.yml ) and Jinja template ( dbgacEpgToIp.j2 ) to create the ACI XML file is also provided.
+
+`add youtube video link HERE when posted`
+
 ### Installation
-This code at the minimum working example stage and testing and development continues.
+To install this app download the tarball ( ansible_tower.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
 
 # Contact Information
 
