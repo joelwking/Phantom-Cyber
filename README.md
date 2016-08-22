@@ -65,7 +65,7 @@ The Ansible playbook ( RTBH.yml ) and the Phantom playbook ( Remote_Trigger_Blac
 A youtube video is available demonstrating how a Cisco ACI fabric configuration can be modified from Phantom. 
 The Phantom playbook ( Dropzone_2.py ) and the Ansible playbook ( dbgacEpgToIp.yml ) and Jinja template ( dbgacEpgToIp.j2 ) to create the ACI XML file is also provided.
 
-`add youtube video link HERE when posted`
+https://youtu.be/neaCPil8c0k
 
 ### Installation
 To install this app download the tarball ( ansible_tower.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
