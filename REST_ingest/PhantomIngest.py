@@ -14,6 +14,7 @@
 
    Revision history:
      5 August 2016  |  1.0 - initial release
+     22 Aug   2016  |  1.1 - Conditionally Disable InsecureRequestWarning due to backlevel python on APIC
 
 """
 
@@ -30,7 +31,6 @@ class PhantomIngest(object):
     def __init__(self, phantom_host, token):
         " The container and artifact common fields can be overridden by using kwargs when calling the method."
 
-        requests.packages.urllib3.disable_warnings()
         self.headers = {"ph-auth-token": token}
         self.url =  "https://%s/rest" % phantom_host
         self.container_id = None
@@ -52,6 +52,11 @@ class PhantomIngest(object):
                                 "source_data_identifier": "APIC_atomic_counters",
                                 "label": "event"
                                 }
+        try:
+            requests.packages.urllib3.disable_warnings()
+        except AttributeError:
+            # Older versions of Requests do not support 'disable_warnings'
+            pass
  
 
     def add_container(self, **kwargs):
