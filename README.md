@@ -4,9 +4,10 @@ Phantom Playbook and App Contest
 https://blog.phantom.us/2016/01/20/2016-playbook-app-contest/
 
 The F5 and Meraki app  contributions to the contest were recognized as a first place (tie) entry at the 17 June 2016 webinar.
-The apps will be discussed at the 26th August 2016 Phantom tech session.
+The apps will be discussed at the 26th August 2016 Phantom tech session: Video Tutorial https://my.phantom.us/video/23/
 
 http://www.slideshare.net/joelwking/10000-phantom-app-playbook-contest-f5-and-cisco-meraki
+
 
 The Ansible Tower app was developed for the second app challenge.
 
@@ -66,6 +67,10 @@ A youtube video is available demonstrating how a Cisco ACI fabric configuration 
 The Phantom playbook ( Dropzone_2.py ) and the Ansible playbook ( dbgacEpgToIp.yml ) and Jinja template ( dbgacEpgToIp.j2 ) to create the ACI XML file is also provided.
 
 https://youtu.be/neaCPil8c0k
+
+This app was featured on Phantom's blog site.
+
+https://blog.phantom.us/2016/08/22/data-exfiltration-monitoring-with-phantom-ansible-and-cisco-aci/
 
 ### Installation
 To install this app download the tarball ( ansible_tower.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
