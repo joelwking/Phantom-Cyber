@@ -1,0 +1,108 @@
+ {
+    "appid"       : "c41ecb97-acef-43ab-ae7b-260cca4097e3",
+    "name"      : "A10 LADC",
+    "description" : "This app supports containment actions like 'block ip' or 'unblock ip' using the A10 Lightning Application Delivery System (LADS). ADD MORE DETAIL",
+    "publisher": "World Wide Technology",
+    "package_name": "phantom_A10",
+    "type": "firewall",
+    "license": "Copyright (c) World Wide Technology, Inc. 2016",
+    "main_module" : "A10_LADS_Connector.pyc",
+    "app_version": "1.0",
+    "utctime_updated": "2016-11-14T01:02:03.000000Z",
+    "product_vendor": "A10",
+    "product_name": "A10 LADC",
+    "product_version_regex": ".*",
+    "min_phantom_version": " 2.0.264",
+    "logo": "A10.png",
+    "url": "https://github.com/joelwking/Phantom-Cyber",
+    "configuration": {"dashboard": {"description": "dashboard, e.g. api.a10networks.com", "data_type": "string", "required": false},
+                      "username": {"description": "username", "data_type": "string", "required": true},
+                      "password": {"description": "password", "data_type": "password", "required": true},
+                      "tenant": {"description": "tenant"}, "data_type": "string", "required": true},
+                      "provider": {"description": "provider"}, "data_type": "string", "required": true}
+                      },
+    "actions": [
+      {
+        "action": "block ip",
+        "description": "Blocks an IP address or network",
+        "type": "contain",
+        "identifier": "block ip",
+        "read_only": false,
+        "parameters": {
+          "source": {
+            "description": "IP/network to block (X.X.X.X/NM)",
+            "contains": [ "ip" ],
+            "primary": true,
+            "data_type": "string",
+            "required": true
+          },
+          "application": {
+            "description": "application name",
+            "data_type": "string",
+            "required": true
+          },
+          "service": {
+            "description": "service name",
+            "data_type": "string",
+            "required": true
+          },
+          "smartflow": {
+            "description": "SmartFlow name",
+            "data_type": "string",
+            "required": true
+          },
+          "action": {
+            "description": "Rule action",
+            "data_type": "string",
+            "value_list": ["deny", "allow"],
+            "required": true
+          }
+        },
+        "output": [],
+        "versions": "EQ(*)"},
+      {
+        "action": "unblock ip",
+        "description": "Removes the rule blocking the IP address or network",
+        "type": "correct",
+        "identifier": "unblock ip",
+        "read_only": false,
+        "parameters": {
+          "source": {
+            "description": "IP/network to unblock (X.X.X.X/NM)",
+            "contains": [ "ip" ],
+            "primary": true,
+            "data_type": "string",
+            "required": true
+          },
+          "application": {
+            "description": "application name",
+            "data_type": "string",
+            "required": true
+          },
+          "service": {
+            "description": "service name",
+            "data_type": "string",
+            "required": true
+          },
+          "smartflow": {
+            "description": "SmartFlow name",
+            "data_type": "string",
+            "required": true
+          }
+        },
+        "output": [],
+        "versions": "EQ(*)"},
+        {
+         "action": "test connectivity",
+         "description": "Validate the asset configuration for connectivity",
+         "verbose": "This action queries the configured applications on the A10 dashboard to validate the asset configuration",
+         "type": "test",
+         "identifier": "test connectivity",
+         "read_only": true,
+         "parameters": {
+         },
+        "output": [],
+        "versions":"EQ(*)"
+        }
+    ]
+}
