@@ -4,9 +4,9 @@
      All rights reserved.
 
      Revision history:
-     8 November 2016  |  1.0 Initial release. 
+     8 November 2016  |  1.0 Initial release.
 
-     module: A10_LADS_Connector.py
+     module: A10_LADS_REST_interface.py
      author: Joel W. King, World Wide Technology
      short_description: Class to manage the connection to A10 Lightning Application Delivery Controller (LADC) Cloud
 
@@ -23,22 +23,22 @@ import httplib
 # AppConnector
 # ========================================================
 
+
 class Lightning(object):
     "Connection class for Python to A10 LADC REST calls"
 
     # tenant and provider values to be specified before invocation
     HEADER = {'Content-Type': 'application/json',
               'tenant': None,
-              'provider': None,}
+              'provider': None}
 
     TRANSPORT = "https://"
     BANNER = "A10_LADC"
-    VALID_GET_STATUS = (200)
-    VALID_POST_STATUS = (200)
+    VALID_GET_STATUS = (200,)
+    VALID_POST_STATUS = (200,)
     ACCESS_POLICY_NAME = "access"
     ACTIVE = "active"
     VALID_RULE_ACTIONS = ("deny", "allow")
-
 
     def __init__(self, dashboard="api.a10networks.com", username="admin", password="redacted", provider=None, tenant=None):
         """
@@ -89,12 +89,24 @@ class Lightning(object):
         self.debug_print("%s set_header_parameters: %s" % (Lightning.BANNER, self.HEADER))
         return
 
+    def get_names(self, result):
+        """ Input variable result is a list of dictionaries, we return the names found.
+            One use case is a query for all applications, returning a list all application names.
+        """
+        name = []
+        if isinstance(result, list):
+            for item in result:
+                try:
+                    name.append(item["name"])
+                except:
+                    pass
+        return name
+
     def reset_status(self):
         "Reset response, status codes"
         self.debug_print("%s reset_status:" % Lightning.BANNER)
         self.status_code = self.response = None
         return
-
 
     def genericGET(self, uri=None):
         " Issue a GET request, storing the results"
@@ -114,13 +126,12 @@ class Lightning(object):
         self.status_code = r.status_code
         try:
             self.response = r.json()                       # r.json() returns a dictionary
-        except ValueError:                                 # 
+        except ValueError:
             self.response = None
 
         if r.status_code in Lightning.VALID_GET_STATUS:
             return True
         return False
-
 
     def genericPOST(self, uri=None, body=None):
         "Issue a POST request, storing the results"
@@ -140,7 +151,7 @@ class Lightning(object):
         self.status_code = r.status_code
         try:
             self.response = r.json()                       # r.json() returns a dictionary
-        except ValueError:                                 # 
+        except ValueError:
             self.response = None
 
         if r.status_code in Lightning.VALID_POST_STATUS:
@@ -168,7 +179,7 @@ class Lightning(object):
 
         del smartflow_policies[index]                      # delete the access policy from the list
         self.smartflow_policies = smartflow_policies
-        
+
         return True
 
     def modify_access_policy(self, CRUD, action, network):
@@ -176,7 +187,7 @@ class Lightning(object):
                "rules": [
                             {
                             "status": true,
-                            "action": "deny",     
+                            "action": "deny",
                             "network": "192.0.2.1/24"
                             }
                         ],
@@ -196,7 +207,7 @@ class Lightning(object):
             else:
                 return None                                # Asked to delete a rule which doesn't exist
 
-        if not action in Lightning.VALID_RULE_ACTIONS:     # Invalid rule action
+        if action not in Lightning.VALID_RULE_ACTIONS:     # Invalid rule action
             return False
 
         if found:

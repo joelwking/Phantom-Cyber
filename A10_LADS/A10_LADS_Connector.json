@@ -1,25 +1,25 @@
  {
     "appid"       : "c41ecb97-acef-43ab-ae7b-260cca4097e3",
-    "name"      : "A10 LADC",
-    "description" : "This app supports containment actions like 'block ip' or 'unblock ip' using the A10 Lightning Application Delivery System (LADS). ADD MORE DETAIL",
+    "name"      : "A10 LADS",
+    "description" : "This app supports containment actions like 'block ip' or 'unblock ip' using the A10 Lightning Application Delivery System (LADS).",
     "publisher": "World Wide Technology",
     "package_name": "phantom_A10",
     "type": "firewall",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "A10_LADS_Connector.pyc",
     "app_version": "1.0",
-    "utctime_updated": "2016-11-14T01:02:03.000000Z",
+    "utctime_updated": "2016-11-15T01:02:03.000000Z",
     "product_vendor": "A10",
-    "product_name": "A10 LADC",
+    "product_name": "A10 LADS",
     "product_version_regex": ".*",
-    "min_phantom_version": " 2.0.264",
+    "min_phantom_version": "2.0.264",
     "logo": "A10.png",
     "url": "https://github.com/joelwking/Phantom-Cyber",
     "configuration": {"dashboard": {"description": "dashboard, e.g. api.a10networks.com", "data_type": "string", "required": false},
                       "username": {"description": "username", "data_type": "string", "required": true},
                       "password": {"description": "password", "data_type": "password", "required": true},
-                      "tenant": {"description": "tenant"}, "data_type": "string", "required": true},
-                      "provider": {"description": "provider"}, "data_type": "string", "required": true}
+                      "tenant": {"description": "tenant", "data_type": "string", "required": true},
+                      "provider": {"description": "provider", "data_type": "string", "required": true}
                       },
     "actions": [
       {
@@ -31,7 +31,6 @@
         "parameters": {
           "source": {
             "description": "IP/network to block (X.X.X.X/NM)",
-            "contains": [ "ip" ],
             "primary": true,
             "data_type": "string",
             "required": true
@@ -41,20 +40,29 @@
             "data_type": "string",
             "required": true
           },
+          "host": {
+            "description": "host name",
+            "data_type": "string",
+            "default": "default-host",
+            "required": true
+          },
           "service": {
             "description": "service name",
             "data_type": "string",
+            "default": "default-service",
             "required": true
           },
           "smartflow": {
             "description": "SmartFlow name",
             "data_type": "string",
+            "default": "default-smartflow",
             "required": true
           },
           "action": {
             "description": "Rule action",
             "data_type": "string",
             "value_list": ["deny", "allow"],
+            "default": "deny",
             "required": true
           }
         },
@@ -69,7 +77,6 @@
         "parameters": {
           "source": {
             "description": "IP/network to unblock (X.X.X.X/NM)",
-            "contains": [ "ip" ],
             "primary": true,
             "data_type": "string",
             "required": true
@@ -79,14 +86,22 @@
             "data_type": "string",
             "required": true
           },
+          "host": {
+            "description": "host name",
+            "data_type": "string",
+            "default": "default-host",
+            "required": true
+          },
           "service": {
             "description": "service name",
             "data_type": "string",
+            "default": "default-service",
             "required": true
           },
           "smartflow": {
             "description": "SmartFlow name",
             "data_type": "string",
+            "default": "default-smartflow",
             "required": true
           }
         },
