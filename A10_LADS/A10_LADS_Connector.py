@@ -4,7 +4,7 @@
      All rights reserved.
 
      Revision history:
-     28 March 2016  |  1.0 - initial release
+     28 November 2016  |  1.0 - initial release
 
      module: A10_LADS_Connector.py
      author: Joel W. King, World Wide Technology
@@ -83,6 +83,12 @@ class A10_LADS_Connector(BaseConnector):
 
         return config.get(key)
 
+    def normalize_ip(self, ipaddress):
+        "Include netmask of /32 if no mask exists"
+        if "/" not in ipaddress:
+            ipaddress += "/32"
+        return ipaddress
+
     def _test_connectivity(self, param, LADS):
         """
         Called when the user depresses the test connectivity button on the Phantom UI.
@@ -150,7 +156,7 @@ class A10_LADS_Connector(BaseConnector):
         action_result = ActionResult(dict(param))          # Add an action result to the App Run
         self.add_action_result(action_result)
 
-        source_ip = param["source"]                        # 8.8.8.8/32 or 192.0.2.0/24  TODO VALIDATE FORMAT
+        source_ip = self.normalize_ip(param["source"])     # 8.8.8.8/32 or 192.0.2.0/24 or 4.4.4.4
         app_name = param["application"]                    # WWT-API
         host_name = param["host"]                          # default-host
         service_name = param["service"]                    # default-service
@@ -164,13 +170,15 @@ class A10_LADS_Connector(BaseConnector):
 
         if LADS.genericGET(uri=uri):                       # Successfully retrieved the Smartflow policy
             LADS.separate_access_policy(LADS.response)
-            LADS.modify_access_policy(CRUD, rule_action, source_ip)
-            LADS.include_access_policy()
-            uri += "/_import"
-            if LADS.genericPOST(uri=uri, body=json.dumps(LADS.smartflow_policies)):
-                action_result.set_status(phantom.APP_SUCCESS)
+            if LADS.modify_access_policy(CRUD, rule_action, source_ip):
+                LADS.include_access_policy()
+                uri += "/_import"
+                if LADS.genericPOST(uri=uri, body=json.dumps(LADS.smartflow_policies)):
+                    action_result.set_status(phantom.APP_SUCCESS)
+                else:
+                    action_result.set_status(phantom.APP_ERROR)
             else:
-                action_result.set_status(phantom.APP_ERROR)
+                action_result.set_status(phantom.APP_ERROR)   # Failure in modifying access policy
         else:
             action_result.set_status(phantom.APP_ERROR)   # Failed to retrieve Smartflow policy
 

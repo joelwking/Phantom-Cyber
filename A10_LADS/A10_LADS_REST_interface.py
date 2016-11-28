@@ -4,7 +4,7 @@
      All rights reserved.
 
      Revision history:
-     8 November 2016  |  1.0 Initial release.
+     28 November 2016  |  1.0 Initial release.
 
      module: A10_LADS_REST_interface.py
      author: Joel W. King, World Wide Technology
