@@ -75,6 +75,17 @@ https://blog.phantom.us/2016/08/22/data-exfiltration-monitoring-with-phantom-ans
 ### Installation
 To install this app download the tarball ( ansible_tower.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
 
+
+## A10 Lightning Application Delivery System (LADS) App
+A10 Lightning Application Delivery System (LADS) is a subscription based managed service (SaaS) that provides a unified set of features for applications deployed in a public and private cloud infrastructure. This app enables security operations the ability to block or unblock IP addresses and IP networks from accessing the application running behind the LADC Cluster. 
+
+This app uses the northbound API to the A10 Lightning Controller to manage the configurations of the LADC Cluster. For more information or to request a trial, refer to https://www.a10networks.com/products/lightning-application-delivery-service and watch this video on the integration of Phantom and A10 LADS.
+
+[ADD VIDEO LINK]
+
+### Installation
+To install this app download the tarball ( A10_LADS.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
+
 # Contact Information
 
 For more information on the security solutions at WWT, visit https://www2.wwt.com/solution/security/
