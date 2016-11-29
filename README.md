@@ -81,7 +81,7 @@ A10 Lightning Application Delivery System (LADS) is a subscription based managed
 
 This app uses the northbound API to the A10 Lightning Controller to manage the configurations of the LADC Cluster. For more information or to request a trial, refer to https://www.a10networks.com/products/lightning-application-delivery-service and watch this video on the integration of Phantom and A10 LADS.
 
-[ADD VIDEO LINK]
+https://youtu.be/vakqZ0wGh6g
 
 ### Installation
 To install this app download the tarball ( A10_LADS.tgz ) and follow the app installation instructions in the Phantom documentation, see https://phantom_host/docs/admin/apps
