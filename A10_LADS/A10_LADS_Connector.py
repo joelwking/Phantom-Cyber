@@ -5,6 +5,7 @@
 
      Revision history:
      28 November 2016  |  1.0 - initial release
+     15 December 2016  |  1.1.0 - Mods from Phantom review, Brian Earle <brian@phantom.us>
 
      module: A10_LADS_Connector.py
      author: Joel W. King, World Wide Technology
@@ -23,6 +24,7 @@ from phantom.action_result import ActionResult
 import simplejson as json
 import time
 import httplib
+import re
 #
 #  application imports
 #
@@ -47,6 +49,8 @@ class A10_LADS_Connector(BaseConnector):
         If this function returns phantom.APP_ERROR, then AppConnector::handle_action will not get called.
         """
         self.debug_print("%s INITIALIZE %s" % (A10_LADS_Connector.BANNER, time.asctime()))
+        self.set_validator('ip network', self.verify_ip_network)
+
         return phantom.APP_SUCCESS
 
     def finalize(self):
@@ -88,6 +92,17 @@ class A10_LADS_Connector(BaseConnector):
         if "/" not in ipaddress:
             ipaddress += "/32"
         return ipaddress
+
+    def verify_ip_network(self, param):
+        """
+        This function will be used to verify the source parameter if it includes a mask.
+        """
+        match = re.match("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])/([1-9]|[1-2][0-9]|3[0-2])$", param)
+
+        if not match:
+            return False
+
+        return True
 
     def _test_connectivity(self, param, LADS):
         """
@@ -175,6 +190,7 @@ class A10_LADS_Connector(BaseConnector):
                 uri += "/_import"
                 if LADS.genericPOST(uri=uri, body=json.dumps(LADS.smartflow_policies)):
                     action_result.set_status(phantom.APP_SUCCESS)
+                    LADS.separate_access_policy(LADS.response)    # Isolate the access policy
                 else:
                     action_result.set_status(phantom.APP_ERROR)
             else:
@@ -182,7 +198,7 @@ class A10_LADS_Connector(BaseConnector):
         else:
             action_result.set_status(phantom.APP_ERROR)   # Failed to retrieve Smartflow policy
 
-        action_result.add_data(LADS.response)
+        action_result.add_data(LADS.access_policy)        # Put the current access policy in the result data
         self.debug_print("%s modify_smartflow_policy code: %s \nresponse: %s" % (A10_LADS_Connector.BANNER, LADS.status_code, LADS.response))
         return
 

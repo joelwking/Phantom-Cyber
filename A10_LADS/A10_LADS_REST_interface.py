@@ -5,6 +5,7 @@
 
      Revision history:
      28 November 2016  |  1.0 Initial release.
+     12 December 2016  |  1.1 Phantom review updates
 
      module: A10_LADS_REST_interface.py
      author: Joel W. King, World Wide Technology
@@ -14,10 +15,7 @@
 #
 #  system imports
 #
-import json
-import time
 import requests
-import httplib
 
 # ========================================================
 # AppConnector

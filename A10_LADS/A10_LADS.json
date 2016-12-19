@@ -7,7 +7,7 @@
     "type": "firewall",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "A10_LADS_Connector.pyc",
-    "app_version": "1.0",
+    "app_version": "1.1.0",
     "utctime_updated": "2016-11-15T01:02:03.000000Z",
     "product_vendor": "A10",
     "product_name": "A10 LADS",
@@ -33,7 +33,8 @@
             "description": "IP/network to block (X.X.X.X/NM)",
             "primary": true,
             "data_type": "string",
-            "required": true
+            "required": true,
+            "contains": [ "ip", "ip network" ]
           },
           "application": {
             "description": "application name",
@@ -66,7 +67,66 @@
             "required": true
           }
         },
-        "output": [],
+         "render": {
+              "width": 12,
+              "title": "Smart Flow Security Policy",
+               "type": "table",
+               "height": 5
+          },
+          "output": [
+            {
+              "data_path": "action_result.data.*.id",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.name",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.type",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.rules.*.action",
+              "data_type": "string",
+              "column_name": "Action",
+              "column_order": 1
+            },
+            {
+              "data_path": "action_result.data.*.rules.*.status",
+              "data_type": "boolean",
+              "column_name": "Status",
+              "column_order": 2
+            },
+            {
+              "data_path": "action_result.data.*.rules.*.network",
+              "data_type": "string",
+              "column_name": "Network",
+              "column_order": 0
+            },
+            {
+              "data_path": "action_result.data.*.state",
+              "data_type": "string",
+              "column_name": "State",
+              "column_order": 3
+            },
+            {
+              "data_path": "action_result.data.*.createdAt",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.lastModifiedAt",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.lastModifiedBy",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.status",
+              "data_type": "string"
+            }
+            ],
         "versions": "EQ(*)"},
       {
         "action": "unblock ip",
@@ -79,7 +139,8 @@
             "description": "IP/network to unblock (X.X.X.X/NM)",
             "primary": true,
             "data_type": "string",
-            "required": true
+            "required": true,
+            "contains": [ "ip", "ip network" ]
           },
           "application": {
             "description": "application name",
@@ -105,7 +166,66 @@
             "required": true
           }
         },
-        "output": [],
+        "render": {
+              "width": 12,
+              "title": "unblock ip",
+               "type": "table",
+               "height": 5
+          },
+                    "output": [
+            {
+              "data_path": "action_result.data.*.id",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.name",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.type",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.rules.*.action",
+              "data_type": "string",
+              "column_name": "Action",
+              "column_order": 1
+            },
+            {
+              "data_path": "action_result.data.*.rules.*.status",
+              "data_type": "boolean",
+              "column_name": "Status",
+              "column_order": 2
+            },
+            {
+              "data_path": "action_result.data.*.rules.*.network",
+              "data_type": "string",
+              "column_name": "Network",
+              "column_order": 0
+            },
+            {
+              "data_path": "action_result.data.*.state",
+              "data_type": "string",
+              "column_name": "State",
+              "column_order": 3
+            },
+            {
+              "data_path": "action_result.data.*.createdAt",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.lastModifiedAt",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.data.*.lastModifiedBy",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.status",
+              "data_type": "string"
+            }
+            ],
         "versions": "EQ(*)"},
         {
          "action": "test connectivity",
