@@ -7,8 +7,8 @@
     "type": "firewall",
     "license": "Copyright (c) World Wide Technology, Inc. 2016",
     "main_module" : "A10_LADS_Connector.pyc",
-    "app_version": "1.1.0",
-    "utctime_updated": "2016-11-15T01:02:03.000000Z",
+    "app_version": "1.1.1",
+    "utctime_updated": "2017-01-02T01:02:03.000000Z",
     "product_vendor": "A10",
     "product_name": "A10 LADS",
     "product_version_regex": ".*",
@@ -124,6 +124,30 @@
             },
             {
               "data_path": "action_result.status",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.parameter.host",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.parameter.action",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.parameter.source",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.parameter.service",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.parameter.smartflow",
+              "data_type": "string"
+            },
+            {
+              "data_path": "action_result.parameter.application",
               "data_type": "string"
             }
             ],
