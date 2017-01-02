@@ -127,6 +127,10 @@
               "data_type": "string"
             },
             {
+              "data_path": "action_result.summary",
+              "data_type": "string"
+            },
+            {
               "data_path": "action_result.parameter.host",
               "data_type": "string"
             },
@@ -136,7 +140,8 @@
             },
             {
               "data_path": "action_result.parameter.source",
-              "data_type": "string"
+              "data_type": "string",
+              "contains": [ "ip", "ip network" ]
             },
             {
               "data_path": "action_result.parameter.service",
