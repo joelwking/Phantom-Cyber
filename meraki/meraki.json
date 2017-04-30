@@ -5,10 +5,10 @@
     "publisher": "World Wide Technology",
     "package_name": "phantom_meraki",
     "type": "information service",
-    "license": "Copyright (c) World Wide Technology, Inc. 2016",
+    "license": "Copyright (c) World Wide Technology, Inc. 2017",
     "main_module" : "meraki_connector.pyc",
-    "app_version": "1.7",
-    "utctime_updated": "2016-06-23T22:02:18.000000Z",
+    "app_version": "1.8",
+    "utctime_updated": "2017-04-30T22:02:18.000000Z",
     "product_vendor": "Cisco Meraki",
     "product_name": "Cisco Meraki",
     "product_version_regex": ".*",
@@ -83,6 +83,11 @@
           "data_path": "action_result.message",
           "data_type": "string"
         },
+        {
+          "data_path": "action_result.summary",
+          "data_type": "string"
+        },
+
         {
           "data_path": "action_result.parameter.timespan",
           "data_type": "string"

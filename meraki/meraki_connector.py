@@ -11,6 +11,7 @@
      5  May   2016  |  1.4 - Added output formatting and search string logic
      12 June  2016  |  1.5 - Documentation
      15 June  2016  |  1.6 - W292 no newline at end of file and W291 trailing whitespace
+     30 April 2017  |  1.8 - Meraki surveillance cameras - a device with no clients
 
      module: meraki_connector.py
      author: Joel W. King, World Wide Technology
@@ -51,6 +52,7 @@ class Meraki_Connector(BaseConnector):
 
         self.HEADER = {"Content-Type": "application/json"}
         self.status_code = []
+        self.OK = (200,)
 
     def initialize(self):
         """
@@ -238,6 +240,7 @@ class Meraki_Connector(BaseConnector):
     def query_api(self, URL):
         """
         Method to query and return results, return an empty list if there are connection error(s).
+        Update 1.8 Return empty list for non OK return codes.
         """
         header = self.HEADER
         header["X-Cisco-Meraki-API-Key"] = self.get_configuration("Meraki-API-Key")
@@ -247,7 +250,13 @@ class Meraki_Connector(BaseConnector):
         except requests.ConnectionError as e:
             self.set_status_save_progress(phantom.APP_ERROR, str(e))
             return []
+
         self.status_code.append(r.status_code)
+        if r.status_code in self.OK:
+            pass
+        else:
+            self.debug_print("%s QUERY_API url: %s status code: %s" % (Meraki_Connector.BANNER, URI, r.status_code))
+            return []
 
         try:
             return r.json()
