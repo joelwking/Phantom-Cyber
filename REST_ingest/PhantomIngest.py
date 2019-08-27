@@ -35,7 +35,7 @@ class PhantomIngest(object):
 
         self.container_common = {"description": "A brief useful description of the behavior tracked by this container",
                                  "name": "A short friendly name for the container",
-                                 "label":"events",
+                                 "label": "events",
                                  "sensitivity": "red",
                                  "severity": "high",
                                  "tags": ['atomic_counters']

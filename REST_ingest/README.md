@@ -2,6 +2,8 @@
 
 This document illustrates use of the PhantomIngest class and methods.
 
+Verify and tested using Phantom version 4.5.15922
+
 ## Usage examples
 Import the module and instanciate it with the hostname and access token.
 ```
@@ -47,11 +49,9 @@ print p.status_code
 ```
 Each container can have no artifacts, or one or more artifacts.
 
-# Boilerplate
-Copyright (c) 2016 World Wide Technology, Inc.
+## Copyright and contact info
+Copyright (c) 2019 World Wide Technology
 All rights reserved.
 
-author: joel.king@wwt.com
+author: joel.king@wwt.com  GitHub/GitLab: @joelwking
 
-Revision history:
-     5 August 2016  |  1.0 - initial release
