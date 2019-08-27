@@ -7,14 +7,10 @@
    Phantom REST APIs https://127.0.0.1/docs/rest/overview documentation.
    It was modified to be imported as a python class for consumption.
 
-   Copyright (c) 2016 World Wide Technology, Inc.
+   Copyright (c) 2019 World Wide Technology
    All rights reserved.
 
    author: joel.king@wwt.com
-
-   Revision history:
-     5 August 2016  |  1.0 - initial release
-     22 Aug   2016  |  1.1 - Conditionally Disable InsecureRequestWarning due to backlevel python on APIC
 
 """
 
@@ -39,7 +35,7 @@ class PhantomIngest(object):
 
         self.container_common = {"description": "A brief useful description of the behavior tracked by this container",
                                  "name": "A short friendly name for the container",
-                                 "label":"intelligence",
+                                 "label":"events",
                                  "sensitivity": "red",
                                  "severity": "high",
                                  "tags": ['atomic_counters']
