@@ -7,7 +7,7 @@
    Phantom REST APIs https://127.0.0.1/docs/rest/overview documentation.
    It was modified to be imported as a python class for consumption.
 
-   Copyright (c) 2019 World Wide Technology
+   Copyright (c) 2020 World Wide Technology, LLC
    All rights reserved.
 
    author: joel.king@wwt.com
@@ -68,7 +68,7 @@ class PhantomIngest(object):
         try:        
             r = requests.post(url, data=json.dumps(data), headers=self.headers, verify=False)
         except requests.ConnectionError as e: 
-            raise Exception, e
+            raise Exception(e)
 
         self.store_requests_status(r)
         assert (r.status_code is requests.codes.ok), "Failure to communicate: %s" % r.status_code
@@ -93,7 +93,7 @@ class PhantomIngest(object):
         try:
             r = requests.post(url, data=json.dumps(data), headers=self.headers, verify=False)
         except requests.ConnectionError as e: 
-            raise Exception, e
+            raise Exception(e)
 
         self.store_requests_status(r)
         assert (r.status_code is requests.codes.ok), "Failure to communicate: %s" % r.status_code

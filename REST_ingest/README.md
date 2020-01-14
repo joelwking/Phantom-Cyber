@@ -50,7 +50,7 @@ print p.status_code
 Each container can have no artifacts, or one or more artifacts.
 
 ## Copyright and contact info
-Copyright (c) 2019 World Wide Technology
+Copyright (c) 2020 World Wide Technology, LLC
 All rights reserved.
 
 author: joel.king@wwt.com  GitHub/GitLab: @joelwking
