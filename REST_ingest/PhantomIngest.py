@@ -68,7 +68,7 @@ class PhantomIngest(object):
         try:        
             r = requests.post(url, data=json.dumps(data), headers=self.headers, verify=False)
         except requests.ConnectionError as e: 
-            raise Exception(e)
+            raise Exception('ConnectionError')
 
         self.store_requests_status(r)
         assert (r.status_code is requests.codes.ok), "Failure to communicate: %s" % r.status_code
@@ -93,7 +93,7 @@ class PhantomIngest(object):
         try:
             r = requests.post(url, data=json.dumps(data), headers=self.headers, verify=False)
         except requests.ConnectionError as e: 
-            raise Exception(e)
+            raise Exception('ConnectionError')
 
         self.store_requests_status(r)
         assert (r.status_code is requests.codes.ok), "Failure to communicate: %s" % r.status_code
