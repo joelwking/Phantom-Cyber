@@ -1,14 +1,14 @@
  {
     "appid"       : "916f12d2-7f9b-4bfa-acff-027514e2b489",
     "name"      : "Cisco Meraki Dashboard",
-    "description" : "This app interfaces with the Cisco Meraki cloud managed devices. The search string specified is used to match a value in the client MAC address or description field. The default dashboard URL is dashboard.meraki.com. The API Key is generated in your account profile. An account with read only privileges is acceptable.",
+    "description" : "This app interfaces with the Cisco Meraki cloud managed devices. The search string specified is used to match a value in the client MAC address or description field. The default dashboard URL is dashboard.meraki.com. The API Key is generated in your account profile. An account with read only privileges is acceptable. Binding a network to a template requires write privileges.",
     "publisher": "World Wide Technology",
     "package_name": "phantom_meraki",
-    "type": "information service",
-    "license": "Copyright (c) World Wide Technology, Inc. 2017",
+    "type": "network access control",
+    "license": "Copyright (c) World Wide Technology, LLC 2020",
     "main_module" : "meraki_connector.pyc",
-    "app_version": "1.8",
-    "utctime_updated": "2017-04-30T22:02:18.000000Z",
+    "app_version": "1.9",
+    "utctime_updated": "2020-04-10T22:02:18.000000Z",
     "product_vendor": "Cisco Meraki",
     "product_name": "Cisco Meraki",
     "product_version_regex": ".*",
@@ -117,7 +117,99 @@
          },
         "output": [],
         "versions":"EQ(*)"
+        },
+        {
+         "action": "bind network",
+         "description": "Bind a network to a template",
+         "verbose": "This action binds a network to a template. Used to apply (or remove) a quarantine template.",
+         "type": "contain",
+         "identifier": "bind network",
+         "read_only": false,
+         "parameters": {
+            "network": {
+              "description": "Network name",
+              "primary": true,
+              "data_type": "string",
+              "required": true
+            },
+            "template": {
+              "description": "Template name",
+              "data_type": "string",
+              "required": true
+            }
+         },
+         "render": {
+             "width": 6,
+             "title": "Template to Network Binding Details",
+             "type": "table",
+             "height": 5
+          },
+        "output": [
+          {
+          "data_path": "action_result.data.*.requested.id",
+          "data_type": "string",
+          "column_name": "Requested Template ID",
+          "column_order": 0
+        },
+                  {
+          "data_path": "action_result.data.*.requested.name",
+          "data_type": "string",
+          "column_name": "Requested Template Name",
+          "column_order": 1
+        },
+        {
+          "data_path": "action_result.data.*.target.id",
+          "data_type": "string",
+          "column_name": "Target Network ID",
+          "column_order": 2
+        },
+        {
+          "data_path": "action_result.data.*.target.name",
+          "data_type": "string",
+          "column_name": "Target Network Name",
+          "column_order": 3
+        },
+        {
+          "data_path": "action_result.data.*.target.org",
+          "data_type": "string",
+          "column_name": "Target Network Organization Id",
+          "column_order": 4
+        },
+        {
+          "data_path": "action_result.data.*.target.template",
+          "data_type": "string",
+          "column_name": "Target Network Template ID",
+          "column_order": 5
+        },
+        {
+          "data_path": "action_result.status",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.message",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.summary",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.parameter.network",
+          "data_type": "string"
+        },
+        {
+          "data_path": "action_result.parameter.template",
+          "data_type": "string"
+        },
+        {
+          "data_path": "summary.total_objects",
+          "data_type": "numeric"
+        },
+        {
+          "data_path": "summary.total_objects_successful",
+          "data_type": "numeric"
+        }],
+        "versions":"EQ(*)"
         }
     ]
 }
-
