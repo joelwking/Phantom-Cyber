@@ -182,6 +182,22 @@ class Meraki_Connector(BaseConnector):
         self.debug_print("%s Data size: %s" % (Meraki_Connector.BANNER, action_result.get_data_size()))
         return action_result.get_status()
 
+    def build_output_record(self, search_string, organization, network, device, client):
+        """
+        Match the search string against the client MAC and description, if there is a match return a dictionary to add to
+        the Action Result data field. A search string of "*" means to return everything.
+        """
+
+        self.debug_print("%s BUILD_OUTPUT_RECORD for: %s %s %s" % (Meraki_Connector.BANNER, device["serial"], client['description'], client['mac']))
+
+        if client.get('description') is None:              # Description could be NoneType
+            client['description'] = ""
+
+        if search_string == "*" or search_string in client['description'] or search_string in client['mac']:
+            return {'client': {'mac': client.get('mac', ''), 'description': client.get('description', '')},
+                'device': device.get('name', ''), 'network': network.get('name', ''), 'organization': organization.get('name', '')}
+        return None
+
     def bind_network(self, param):
         """
         Bind a network to a template
@@ -191,7 +207,7 @@ class Meraki_Connector(BaseConnector):
         action_result = ActionResult(dict(param))          # Add an action result to the App Run
         self.add_action_result(action_result)
 
-        target_network = {}    
+        target_network = {}
         templates = {}                                     # key=org_id, value= list of templates
 
         orgs = self.get_org_ids()
@@ -243,49 +259,12 @@ class Meraki_Connector(BaseConnector):
                        target=dict(id=target_network['id'],
                                    name=target_network['name'],
                                    org=target_network['organizationId'],
-                                   template=target_network.get('configTemplateId')))
+                                   template_id=target_network.get('configTemplateId'),
+                                   template_name=self.get_template_name(templates[target_network['organizationId']], target_network.get('configTemplateId'))))
 
         action_result.add_data(results)
+        action_result.add_extra_data(dict(templates=templates))
         action_result.set_status(phantom.APP_SUCCESS)
-
-    def post_api(self, URL, body=dict()):
-        """
-        Method to issue POST, return False if there are connection error(s) or bad requests, True if OK
-        """
-        self.debug_print("%s POST_API url: %s %s " % (Meraki_Connector.BANNER, URL, body))
-
-        header = self.HEADER
-        header["X-Cisco-Meraki-API-Key"] = self.get_configuration("Meraki-API-Key")
-        URI = "https://" + self.get_configuration("dashboard") + URL
-        try:
-            r = requests.post(URI, headers=header, data=json.dumps(body), verify=False)
-
-        except requests.ConnectionError as e:
-            self.set_status_save_progress(phantom.APP_ERROR, str(e))
-            return False
-
-        self.status_code.append(r.status_code)
-        if r.status_code in self.OK:
-            return True
-        else:
-            self.debug_print("%s POST_API url: %s status code: %s text: %s" % (Meraki_Connector.BANNER, URI, r.status_code, r.text))
-            return False
-
-    def build_output_record(self, search_string, organization, network, device, client):
-        """
-        Match the search string against the client MAC and description, if there is a match return a dictionary to add to
-        the Action Result data field. A search string of "*" means to return everything.
-        """
-
-        self.debug_print("%s BUILD_OUTPUT_RECORD for: %s %s %s" % (Meraki_Connector.BANNER, device["serial"], client['description'], client['mac']))
-
-        if client.get('description') is None:              # Description could be NoneType
-            client['description'] = ""
-
-        if search_string == "*" or search_string in client['description'] or search_string in client['mac']:
-            return {'client': {'mac': client.get('mac', ''), 'description': client.get('description', '')},
-                'device': device.get('name', ''), 'network': network.get('name', ''), 'organization': organization.get('name', '')}
-        return None
 
     def get_org_ids(self):
         """
@@ -302,6 +281,15 @@ class Meraki_Connector(BaseConnector):
         return [{u'id': u'L_629378047925043760', u'name': u'quarantine', u'productTypes': [u'appliance',  u'wireless']}]
         """
         return self.query_api("/api/v0/organizations/" + str(organization_id) + "/configTemplates")
+
+    def get_template_name(self, templates, template_id):
+        """
+        Return the name of a template from a list of templates, given the template ID. Return None if not found.
+        """
+        for template in templates:
+            if template['id'] == template_id:
+                return template.get('name')
+        return None
 
     def get_networks(self, organization_id):
         """
@@ -361,6 +349,29 @@ class Meraki_Connector(BaseConnector):
             return r.json()
         except ValueError:                                 # If you get a 404 error, throws a ValueError exception
             return []
+
+    def post_api(self, URL, body=dict()):
+        """
+        Method to issue POST, return False if there are connection error(s) or bad requests, True if OK
+        """
+        self.debug_print("%s POST_API url: %s %s " % (Meraki_Connector.BANNER, URL, body))
+
+        header = self.HEADER
+        header["X-Cisco-Meraki-API-Key"] = self.get_configuration("Meraki-API-Key")
+        URI = "https://" + self.get_configuration("dashboard") + URL
+        try:
+            r = requests.post(URI, headers=header, data=json.dumps(body), verify=False)
+
+        except requests.ConnectionError as e:
+            self.set_status_save_progress(phantom.APP_ERROR, str(e))
+            return False
+
+        self.status_code.append(r.status_code)
+        if r.status_code in self.OK:
+            return True
+        else:
+            self.debug_print("%s POST_API url: %s status code: %s text: %s" % (Meraki_Connector.BANNER, URI, r.status_code, r.text))
+            return False
 
     def handle_action(self, param):
         """

@@ -1,14 +1,14 @@
  {
     "appid"       : "916f12d2-7f9b-4bfa-acff-027514e2b489",
     "name"      : "Cisco Meraki Dashboard",
-    "description" : "This app interfaces with the Cisco Meraki cloud managed devices. The search string specified is used to match a value in the client MAC address or description field. The default dashboard URL is dashboard.meraki.com. The API Key is generated in your account profile. An account with read only privileges is acceptable. Binding a network to a template requires write privileges.",
+    "description" : "This app interfaces with cloud managed Cisco Meraki devices. The default dashboard URL is dashboard.meraki.com. API access is enabled by generating an API key under the Meraki account profile. Provide the key when configuring the asset. To locate a device, specify a search string (or * to return all devices). Devices with values matching the client MAC address or description field are returned. Binding a template to a network is intended to apply (or remove) a quarantine template.",
     "publisher": "World Wide Technology",
     "package_name": "phantom_meraki",
     "type": "network access control",
     "license": "Copyright (c) World Wide Technology, LLC 2020",
     "main_module" : "meraki_connector.pyc",
     "app_version": "1.9",
-    "utctime_updated": "2020-04-10T22:02:18.000000Z",
+    "utctime_updated": "2020-04-15T22:02:18.000000Z",
     "product_vendor": "Cisco Meraki",
     "product_name": "Cisco Meraki",
     "product_version_regex": ".*",
@@ -121,7 +121,7 @@
         {
          "action": "bind network",
          "description": "Bind a network to a template",
-         "verbose": "This action binds a network to a template. Used to apply (or remove) a quarantine template.",
+         "verbose": "This action binds a network to a template. Used to apply (or remove) a quarantine template. Specify the template name you wish to apply to the target network.",
          "type": "contain",
          "identifier": "bind network",
          "read_only": false,
@@ -148,13 +148,13 @@
           {
           "data_path": "action_result.data.*.requested.id",
           "data_type": "string",
-          "column_name": "Requested Template ID",
+          "column_name": "Template ID (reqested)",
           "column_order": 0
         },
                   {
           "data_path": "action_result.data.*.requested.name",
           "data_type": "string",
-          "column_name": "Requested Template Name",
+          "column_name": "Template Name (requested)",
           "column_order": 1
         },
         {
@@ -176,10 +176,16 @@
           "column_order": 4
         },
         {
-          "data_path": "action_result.data.*.target.template",
+          "data_path": "action_result.data.*.target.template_id",
           "data_type": "string",
-          "column_name": "Target Network Template ID",
+          "column_name": "Target Network Template ID (prior)",
           "column_order": 5
+        },
+        {
+          "data_path": "action_result.data.*.target.template_name",
+          "data_type": "string",
+          "column_name": "Target Network Template Name (prior)",
+          "column_order": 6
         },
         {
           "data_path": "action_result.status",
