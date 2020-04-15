@@ -1,6 +1,6 @@
 #
 """
-     Copyright (c) 2016 World Wide Technology, Inc.
+     Copyright (c) 2020 World Wide Technology, LLC.
      All rights reserved.
 
      Revision history:
@@ -12,6 +12,7 @@
      12 June  2016  |  1.5 - Documentation
      15 June  2016  |  1.6 - W292 no newline at end of file and W291 trailing whitespace
      30 April 2017  |  1.8 - Meraki surveillance cameras - a device with no clients
+     13 April 2020  |  1.9 - bind network
 
      module: meraki_connector.py
      author: Joel W. King, World Wide Technology
@@ -189,13 +190,81 @@ class Meraki_Connector(BaseConnector):
 
         self.debug_print("%s BUILD_OUTPUT_RECORD for: %s %s %s" % (Meraki_Connector.BANNER, device["serial"], client['description'], client['mac']))
 
-        if client['description'] is None:                  # Description could be NoneType
+        if client.get('description') is None:              # Description could be NoneType
             client['description'] = ""
 
         if search_string == "*" or search_string in client['description'] or search_string in client['mac']:
-            return {'client': {'mac': client['mac'], 'description': client['description']},
-                'device': device['name'], 'network': network['name'], 'organization': organization['name']}
+            return {'client': {'mac': client.get('mac', ''), 'description': client.get('description', '')},
+                'device': device.get('name', ''), 'network': network.get('name', ''), 'organization': organization.get('name', '')}
         return None
+
+    def bind_network(self, param):
+        """
+        Bind a network to a template
+        """
+        self.debug_print("%s BIND NETWORK parameters:\n%s" % (Meraki_Connector.BANNER, param))
+
+        action_result = ActionResult(dict(param))          # Add an action result to the App Run
+        self.add_action_result(action_result)
+
+        target_network = {}
+        templates = {}                                     # key=org_id, value= list of templates
+
+        orgs = self.get_org_ids()
+        for organization in orgs:
+            templates[organization['id']] = self.get_templates(organization['id'])
+            networks = self.get_networks(organization['id'])
+            for network in networks:
+                if param.get('network') == network.get('name'):
+                    target_network = network
+                    break
+
+        # Verfiy we have found the requested network
+
+        if not target_network:
+            return self.set_status_save_progress(phantom.APP_ERROR, "Network not found!")
+
+        # Templates are specific to an Org
+
+        requested_template = {}
+        for template in templates[target_network['organizationId']]:
+            if param.get('template') == template['name']:
+                 requested_template = template
+                 break
+
+        # Did we located the template in the Org which contains the network?
+
+        if not requested_template:
+            return self.set_status_save_progress(phantom.APP_ERROR, "Requested template not found!")
+
+        # First, you must unbind the existing template, if bound (if not bound, API returns 400 Network is not bound )
+
+        if target_network.get('configTemplateId'):
+            if not self.post_api('/api/v0/networks/' + target_network['id'] + '/unbind'):
+                return self.set_status_save_progress(phantom.APP_ERROR, "Failure unbinding network from template!")
+
+            self.set_status_save_progress(phantom.APP_SUCCESS, "Unbound template from network.")
+
+        # Then, apply the requested template ID to the target network
+
+        payload = {'configTemplateId': requested_template['id']}
+
+        if not self.post_api('/api/v0/networks/{}/bind'.format(target_network['id']), body=payload):
+            return self.set_status_save_progress(phantom.APP_ERROR, "Failed to bind the template: {}".format(payload))
+
+        # Report back to user pertaintent details
+
+        results = dict(requested=dict(id=requested_template['id'],
+                                      name=requested_template['name']),
+                       target=dict(id=target_network['id'],
+                                   name=target_network['name'],
+                                   org=target_network['organizationId'],
+                                   template_id=target_network.get('configTemplateId'),
+                                   template_name=self.get_template_name(templates[target_network['organizationId']], target_network.get('configTemplateId'))))
+
+        action_result.add_data(results)
+        action_result.add_extra_data(dict(templates=templates))
+        action_result.set_status(phantom.APP_SUCCESS)
 
     def get_org_ids(self):
         """
@@ -205,12 +274,30 @@ class Meraki_Connector(BaseConnector):
         """
         return self.query_api("/api/v0/organizations")
 
+    def get_templates(self, organization_id):
+        """
+        Return a list of configuration templates for this organization
+        URI = "https://dashboard.meraki.com/api/v0/organizations/530205/networks"
+        return [{u'id': u'L_629378047925043760', u'name': u'quarantine', u'productTypes': [u'appliance',  u'wireless']}]
+        """
+        return self.query_api("/api/v0/organizations/" + str(organization_id) + "/configTemplates")
+
+    def get_template_name(self, templates, template_id):
+        """
+        Return the name of a template from a list of templates, given the template ID. Return None if not found.
+        """
+        for template in templates:
+            if template['id'] == template_id:
+                return template.get('name')
+        return None
+
     def get_networks(self, organization_id):
         """
         Return a list of network IDs for this organization
         URI = "https://dashboard.meraki.com/api/v0/organizations/530205/networks"
-        return [{u'id': u'L_629378047925028460', u'name': u'SWISSWOOD', u'organizationId': u'530205', u'tags': u'',
-                 u'timeZone': u'America/New_York',  u'type': u'combined'}]
+        return [{u'configTemplateId': u'L_629378047925043759', u'disableMyMerakiCom': False, u'disableRemoteStatusPage': True,
+                 u'id': u'N_629378047925100521', u'name': u'GENE', u'organizationId': u'530205', u'productTypes': [u'appliance'],
+                 u'tags': None, u'timeZone': u'America/Los_Angeles', u'type': u'appliance'}]
         """
         return self.query_api("/api/v0/organizations/" + str(organization_id) + "/networks")
 
@@ -263,6 +350,29 @@ class Meraki_Connector(BaseConnector):
         except ValueError:                                 # If you get a 404 error, throws a ValueError exception
             return []
 
+    def post_api(self, URL, body=dict()):
+        """
+        Method to issue POST, return False if there are connection error(s) or bad requests, True if OK
+        """
+        self.debug_print("%s POST_API url: %s %s " % (Meraki_Connector.BANNER, URL, body))
+
+        header = self.HEADER
+        header["X-Cisco-Meraki-API-Key"] = self.get_configuration("Meraki-API-Key")
+        URI = "https://" + self.get_configuration("dashboard") + URL
+        try:
+            r = requests.post(URI, headers=header, data=json.dumps(body), verify=False)
+
+        except requests.ConnectionError as e:
+            self.set_status_save_progress(phantom.APP_ERROR, str(e))
+            return False
+
+        self.status_code.append(r.status_code)
+        if r.status_code in self.OK:
+            return True
+        else:
+            self.debug_print("%s POST_API url: %s status code: %s text: %s" % (Meraki_Connector.BANNER, URI, r.status_code, r.text))
+            return False
+
     def handle_action(self, param):
         """
         This function implements the main functionality of the AppConnector. It gets called for every param dictionary element
@@ -278,6 +388,7 @@ class Meraki_Connector(BaseConnector):
         self.debug_print("%s HANDLE_ACTION action_id:%s parameters:\n%s" % (Meraki_Connector.BANNER, action_id, param))
 
         supported_actions = {"test connectivity": self._test_connectivity,
+                            "bind network": self.bind_network,
                             "locate device": self.locate_device}
 
         run_action = supported_actions[action_id]
