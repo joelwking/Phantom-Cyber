@@ -54,6 +54,7 @@ class Meraki_Connector(BaseConnector):
         self.HEADER = {"Content-Type": "application/json"}
         self.status_code = []
         self.OK = (200,)
+        self.RATE_LIMIT_EXCEEDED = 429
 
     def initialize(self):
         """
@@ -333,7 +334,7 @@ class Meraki_Connector(BaseConnector):
         header["X-Cisco-Meraki-API-Key"] = self.get_configuration("Meraki-API-Key")
         URI = "https://" + self.get_configuration("dashboard") + URL
         try:
-            r = requests.get(URI, headers=header, verify=False)
+            r = self.rate_limit(requests.get(URI, headers=header, verify=False))
         except requests.ConnectionError as e:
             self.set_status_save_progress(phantom.APP_ERROR, str(e))
             return []
@@ -360,8 +361,7 @@ class Meraki_Connector(BaseConnector):
         header["X-Cisco-Meraki-API-Key"] = self.get_configuration("Meraki-API-Key")
         URI = "https://" + self.get_configuration("dashboard") + URL
         try:
-            r = requests.post(URI, headers=header, data=json.dumps(body), verify=False)
-
+            r = self.rate_limit(requests.post(URI, headers=header, data=json.dumps(body), verify=False))
         except requests.ConnectionError as e:
             self.set_status_save_progress(phantom.APP_ERROR, str(e))
             return False
@@ -372,6 +372,26 @@ class Meraki_Connector(BaseConnector):
         else:
             self.debug_print("%s POST_API url: %s status code: %s text: %s" % (Meraki_Connector.BANNER, URI, r.status_code, r.text))
             return False
+
+    def rate_limit(self, api_call):
+        """
+        Handles the rate_limiting feature of Meraki Cloud - refer to
+        https://developer.cisco.com/meraki/api/#/rest/guides/rate-limit/tips-to-avoid-being-rate-limited
+        RL_RETRY is defined the the connector constants file should the end user need to increate the retries.
+
+        Returns the requests object to the calling method.
+        """
+
+        for _ in range(RL_RETRY):
+
+            response = api_call
+
+            if response.status_code == self.RATE_LIMIT_EXCEEDED:
+                time.sleep(int(response.headers.get("Retry-After"), 1))
+            else:
+                return response
+        
+        return response
 
     def handle_action(self, param):
         """
