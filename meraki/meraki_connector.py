@@ -13,6 +13,7 @@
      15 June  2016  |  1.6 - W292 no newline at end of file and W291 trailing whitespace
      30 April 2017  |  1.8 - Meraki surveillance cameras - a device with no clients
      13 April 2020  |  1.9 - bind network
+     20 April 2020  |  2.0 - rate limit logic
 
      module: meraki_connector.py
      author: Joel W. King, World Wide Technology
@@ -379,7 +380,7 @@ class Meraki_Connector(BaseConnector):
         https://developer.cisco.com/meraki/api/#/rest/guides/rate-limit/tips-to-avoid-being-rate-limited
         RL_RETRY is defined the the connector constants file should the end user need to increate the retries.
 
-        Returns the requests object to the calling method.
+        Returns the requests object to the calling method. Calling method to catch ConnectionError exceptions.
         """
 
         for _ in range(RL_RETRY):
@@ -390,7 +391,7 @@ class Meraki_Connector(BaseConnector):
                 time.sleep(int(response.headers.get("Retry-After"), 1))
             else:
                 return response
-        
+
         return response
 
     def handle_action(self, param):
