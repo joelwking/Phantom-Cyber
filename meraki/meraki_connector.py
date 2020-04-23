@@ -335,7 +335,7 @@ class Meraki_Connector(BaseConnector):
         header["X-Cisco-Meraki-API-Key"] = self.get_configuration("Meraki-API-Key")
         URI = "https://" + self.get_configuration("dashboard") + URL
         try:
-            r = self.rate_limit(requests.get(URI, headers=header, verify=False))
+            r = self.rate_limit(requests.get, URI, headers=header, verify=False)
         except requests.ConnectionError as e:
             self.set_status_save_progress(phantom.APP_ERROR, str(e))
             return []
@@ -362,7 +362,7 @@ class Meraki_Connector(BaseConnector):
         header["X-Cisco-Meraki-API-Key"] = self.get_configuration("Meraki-API-Key")
         URI = "https://" + self.get_configuration("dashboard") + URL
         try:
-            r = self.rate_limit(requests.post(URI, headers=header, data=json.dumps(body), verify=False))
+            r = self.rate_limit(requests.post, URI, headers=header, data=json.dumps(body), verify=False)
         except requests.ConnectionError as e:
             self.set_status_save_progress(phantom.APP_ERROR, str(e))
             return False
@@ -374,7 +374,7 @@ class Meraki_Connector(BaseConnector):
             self.debug_print("%s POST_API url: %s status code: %s text: %s" % (Meraki_Connector.BANNER, URI, r.status_code, r.text))
             return False
 
-    def rate_limit(self, api_call):
+    def rate_limit(self, api_call, url, **kwargs):
         """
         Handles the rate_limiting feature of Meraki Cloud - refer to
         https://developer.cisco.com/meraki/api/#/rest/guides/rate-limit/tips-to-avoid-being-rate-limited
@@ -385,7 +385,7 @@ class Meraki_Connector(BaseConnector):
 
         for _ in range(RL_RETRY):
 
-            response = api_call
+            response = api_call(url, **kwargs)
 
             if response.status_code == self.RATE_LIMIT_EXCEEDED:
                 time.sleep(int(response.headers.get("Retry-After"), 1))
