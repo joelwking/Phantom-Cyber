@@ -43,6 +43,7 @@ This app has been updated to include a `bind network` action which can be used t
 * [How Agile Is Your Managed SD-WAN Solution?](https://www.wwt.com/article/how-agile-is-your-managed-sd-wan-solution)
 * [Video Clip](https://vimeo.com/423587585)
 * [DevPost submission](https://devpost.com/software/meraki-app-for-splunk-phantom)
+* [Overview Slide deck](https://www.slideshare.net/joelwking/meraki-virtual-hackathon-vy-2020/joelwking/meraki-virtual-hackathon-vy-2020)
 
 ### Installation
 To install this app download the tarball ( meraki.tgz ) and follow the app installation instructions in the Phantom documentation, see `https://<your_phantom_host>/docs/admin/apps`.
